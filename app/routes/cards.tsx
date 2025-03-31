@@ -1,3 +1,183 @@
-export default function Page() {
-  return <div>This is future cards Page</div>;
+//app/routes/cards.tsx
+import { useState } from "react";
+import { useLoaderData } from "react-router";
+import { getCardsAll } from "~/utils/db";
+import { Trash, CheckCircle, ThumbsUp, ThumbsDown } from "lucide-react";
+import type { Card } from "~/utils/card-repo";
+import { Link } from "react-router";
+import clsx from "clsx";
+
+// loader 함수에서 카드 데이터를 불러옴
+export const loader = async () => {
+  const cards = await getCardsAll();
+  return cards;
+};
+
+export default function Cards() {
+  const cards = useLoaderData(); // loader에서 반환된 데이터를 사용
+  const [cardList, setCardList] = useState(cards); // 카드 목록 상태 관리
+  const [success, setSuccess] = useState<{ [key: number]: boolean }>({});
+
+  // 삭제 버튼 클릭 시 호출되는 함수
+  const handleDelete = async (cardId: number) => {
+    try {
+      const confirm = window.confirm("카드를 삭제하겠습니까?");
+      if (confirm) {
+        const response = await fetch(`/api/card/${cardId}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          console.log(`Card with ID ${cardId} deleted`);
+        } else {
+          console.error("Failed to delete the card");
+        }
+      }
+    } catch (error) {
+      console.error("Error occurred while deleting the card:", error);
+    }
+  };
+
+  // 성공/실패 토글 버튼 클릭 시 호출되는 함수
+  const toggleSuccessFailure = (cardId: number) => {
+    // console.log('hello This is future ToggleBtn')
+    setSuccess((pre) => ({ ...pre, [cardId]: !pre[cardId] }));
+    console.log(success);
+  };
+
+  // 완료 버튼 클릭 시 호출되는 함수
+  const handleComplete = async (cardId: number) => {
+    const card = cardList.find((c: Card & { id: number }) => c.id === cardId);
+    if (!card) return;
+    const today = new Date().toISOString().split("T")[0];
+
+    const updatedReviewCount = card.reviewCount + 1;
+    const updatedBox = success[cardId]
+      ? card.box + 1
+      : Math.max(1, card.box - 1);
+    const updatedInterval = success[cardId]
+      ? card.reviewInterval + 1
+      : Math.max(1, card.reviewInterval - 1);
+    const updatedNextReview = new Date();
+    updatedNextReview.setDate(updatedNextReview.getDate() + updatedInterval);
+
+    const updatedCard = {
+      ...card,
+      box: updatedBox,
+      reviewInterval: updatedInterval,
+      nextReview: updatedNextReview.toISOString().split("T")[0],
+      lastReview: today,
+      reviewCount: updatedReviewCount,
+    };
+
+    try {
+      const response = await fetch(`/api/card/${cardId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(updatedCard),
+      });
+
+      if (response.ok) {
+        console.log(`Card ${cardId} updated successfully!`);
+
+        // ✅ UI 업데이트
+        setCardList((prevList: typeof cardList) =>
+          prevList.map((c: Card & { id: number }) =>
+            c.id === cardId ? updatedCard : c
+          )
+        );
+      } else {
+        console.error(`Failed to update card ${cardId}`);
+      }
+    } catch (error) {
+      console.error("Error updating card:", error);
+    }
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto px-4">
+      <h2 className="text-2xl font-bold mb-4">
+        There are totally {cardList.length} Cards.
+      </h2>
+      {cardList.length === 0 ? (
+        <p className="text-gray-600">
+          No cards available at the moment. Please add some cards!
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {cardList.map((card: Card & { id: number }) => (
+            <div
+              key={card.id}
+              className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow"
+            >
+              <Link to={`/card/${card.id}`}>
+                <h3 className="text-xl font-semibold text-blue-600">
+                  {card.title}
+                </h3>
+              </Link>
+              <p className="text-gray-700 mt-2">{card.content}</p>
+              <p className={clsx("text-gray-500 mt-2", { hidden: true })}>
+                {card.answer}
+              </p>
+
+              {/* 날짜 정보 영역 */}
+              <div className="mt-4">
+                <div className="mt-2 text-sm text-gray-400">
+                  <p>Last Review: {card.lastReview}</p>
+                </div>
+                <div className="mt-2 text-sm text-gray-400">
+                  <p>Next Review: {card.nextReview}</p>
+                </div>
+              </div>
+
+              {/* 부가정보 영역 */}
+              <div className="mt-4 flex">
+                <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2">
+                  Tier: {card.tier}
+                </span>
+                <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2">
+                  Box: {card.box}
+                </span>
+                <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2">
+                  Count: {card.reviewCount}
+                </span>
+              </div>
+
+              {/* 버튼 영역 */}
+              <div className="mt-4 flex justify-end space-x-4">
+                {/* 삭제 버튼 */}
+                <button
+                  onClick={() => handleDelete(card.id)}
+                  className="bg-red-500 text-white p-2 rounded-md hover:bg-red-600 transition"
+                  title="Delete"
+                >
+                  <Trash className="w-5 h-5" />
+                </button>
+                {/* 성공/실패 토글 버튼 */}
+                <button
+                  onClick={() => toggleSuccessFailure(card.id)}
+                  className={clsx("text-white p-2 rounded-md", {
+                    "bg-yellow-500 hover:bg-yellow-600 transition":
+                      success[card.id],
+                    "bg-gray-500 hover:bg-gray-600 transition":
+                      !success[card.id],
+                  })}
+                  title="Toggle Success/Failure"
+                >
+                  {success[card.id] ? <ThumbsUp /> : <ThumbsDown />}
+                </button>
+                {/* 완료 버튼 */}
+                <button
+                  onClick={() => handleComplete(card.id)}
+                  className="bg-green-500 text-white p-2 rounded-md hover:bg-green-600 transition"
+                  title="Complete"
+                >
+                  <CheckCircle className="w-5 h-5" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
 }

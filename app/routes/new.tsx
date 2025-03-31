@@ -1,25 +1,38 @@
+import clsx from "clsx";
 import React, { useRef, useState } from "react";
-import { Form } from "react-router";
+import { Form, redirect } from "react-router";
+import type { Route } from "../+types/root";
+import { makeCard } from "~/utils/card-repo";
+import { setCard } from "~/utils/db";
 
-export default function Page() {
+export const action = async ({ request }: Route.ActionArgs) => {
+  const formData = await request.formData();
+  console.log(formData);
+
+  const title = formData.get("title") as string;
+  const content = formData.get("content") as string;
+  const tier = Number(formData.get("tier"));
+  const answer = formData.get("answer") as string;
+  const superCard = formData.get("superCard") as string;
+  const card = makeCard({ title, content, tier, answer, superCard });
+
+  await setCard(card);
+  return redirect("/cards");
+};
+
+export default function New() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const [card, setCard] = useState({
     title: "",
     content: "",
     tier: 1,
-    superCard: 0,
+    answer: "",
+    superCard: "",
     image: "",
   });
-  const [isShow, setIsShow] = useState(false);
 
-  const handleOkBtn = () => {
-    window.alert("Card Created!");
-  };
-
-  const handleSubmitBtn = () => {
-    window.alert("Card Created!");
-  };
+  const [isShow, setShow] = useState(false);
 
   const handleChange = (
     event:
@@ -53,6 +66,11 @@ export default function Page() {
     console.log(name, ":", value);
   };
 
+  const handleOkBtn = (e: React.FormEvent) => {
+    e.preventDefault();
+    setShow(!isShow);
+  };
+
   const handleRemoveImage = () => {
     setCard((prevCard) => ({
       ...prevCard,
@@ -65,134 +83,149 @@ export default function Page() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg">
+    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg min-w-xl min-h-[calc(100vh-300px)]">
       <h2 className="text-2xl font-semibold text-center mb-6">
         Create New Card
       </h2>
-      <Form className="space-y-4" onSubmit={handleSubmitBtn}>
-        <div className="flex flex-col">
-          <label htmlFor="title" className="font-medium text-gray-700">
-            Title
-          </label>
-          <input
-            id="title"
-            name="title"
-            type="text"
-            required
-            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleChange}
-            value={card.title}
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label htmlFor="content" className="font-medium text-gray-700">
-            Content
-          </label>
-          <textarea
-            id="content"
-            name="content"
-            required
-            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleChange}
-            value={card.content}
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label htmlFor="tier" className="font-medium text-gray-700">
-            Tier
-          </label>
-          <input
-            id="tier"
-            name="tier"
-            type="number"
-            min="1"
-            step="1"
-            required
-            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleChange}
-            value={card.tier}
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label htmlFor="supercard" className="font-medium text-gray-700">
-            Super Card
-          </label>
-          <input
-            id="superCard"
-            name="superCard"
-            type="number"
-            placeholder="Optional"
-            className="p-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            onChange={handleChange}
-            value={card.superCard}
-          />
-        </div>
-
-        <div className="flex flex-col">
-          <label htmlFor="image" className="font-medium text-gray-700">
-            Image
-          </label>
-          <input
-            id="image"
-            name="image"
-            type="file"
-            accept="image/*"
-            className="file:border file:border-gray-300 file:rounded-lg file:px-4 file:py-2 file:text-sm file:text-gray-700 file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700 focus:file:ring-2 focus:file:ring-blue-500"
-            onChange={handleChange}
-            ref={fileInputRef}
-          />
-        </div>
-
-        {card.image && (
-          <div className="mt-4 relative">
-            <img
-              src={card.image}
-              alt="Uploaded Preview"
-              className="w-full h-auto rounded-lg shadow"
+      <Form action="/new" method="post">
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Title
+            </label>
+            <input
+              type="text"
+              name="title"
+              value={card.title}
+              required
+              onChange={handleChange}
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
             />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Content
+            </label>
+            <textarea
+              name="content"
+              rows={4}
+              value={card.content}
+              required
+              onChange={handleChange}
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Tier
+            </label>
+            <input
+              type="number"
+              name="tier"
+              value={card.tier}
+              onChange={handleChange}
+              min="1"
+              step="1"
+              required
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Answer
+            </label>
+            <input
+              type="text"
+              name="answer"
+              value={card.answer}
+              onChange={handleChange}
+              placeholder="(optional...)"
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+
+          <div className={clsx("", { hidden: card.tier === 1 })}>
+            <label className="block text-sm font-medium text-gray-700">
+              SuperCard
+            </label>
+            <input
+              type="text"
+              name="superCard"
+              value={card.superCard}
+              onChange={handleChange}
+              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+            />
+          </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="image" className="font-medium text-gray-700">
+              Image
+            </label>
+            <input
+              id="image"
+              name="image"
+              type="file"
+              accept="image/*"
+              className="file:border file:border-gray-300 file:rounded-lg file:px-4 file:py-2 file:text-sm file:text-gray-700 file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700 focus:file:ring-2 focus:file:ring-blue-500"
+              onChange={handleChange}
+              ref={fileInputRef}
+            />
+          </div>
+
+          {card.image && (
+            <div className="mt-4 relative">
+              <img
+                src={card.image}
+                alt="Uploaded Preview"
+                className="w-full h-auto rounded-lg shadow"
+              />
+              <button
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600"
+              >
+                삭제
+              </button>
+            </div>
+          )}
+
+          <div className="flex flex-col">
             <button
-              onClick={handleRemoveImage}
-              className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600"
+              onClick={handleOkBtn}
+              className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
-              삭제
+              {isShow ? "Hide" : "OK"}
+            </button>
+
+            <div
+              className={clsx("mt-4 mb-4 p-2 border rounded-md bg-gray-100", {
+                hidden: !isShow,
+              })}
+            >
+              {isShow ? (
+                <div>
+                  <div>{card.title && `Title: ${card.title}`}</div>
+                  <div>{card.content && `Content: ${card.content}`}</div>
+                  <div>{card.tier && `Tier: ${card.tier}`}</div>
+                  <div>{card.answer && `Answer: ${card.answer}`}</div>
+                </div>
+              ) : null}
+            </div>
+
+            <button
+              type="submit"
+              className={clsx(
+                "px-4 py-2 border-gray-300 text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50",
+                { hidden: !isShow }
+              )}
+            >
+              Save
             </button>
           </div>
-        )}
-
-        <div className="flex flex-col space-y-2">
-          <button
-            type="button"
-            onClick={handleOkBtn}
-            className="w-full py-2 bg-gray-400 text-white font-semibold rounded-lg hover:bg-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-500"
-          >
-            OK
-          </button>
-          <button
-            type="submit"
-            className="w-full py-2 bg-blue-500 text-white font-semibold rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500"
-          >
-            생성하기
-          </button>
         </div>
       </Form>
-
-      {isShow && (
-        <div className="mt-6 p-4 bg-gray-100 rounded-lg">
-          <h3 className="text-lg font-semibold">Created Card:</h3>
-          <pre className="bg-white p-3 rounded-lg shadow-inner">
-            {JSON.stringify(card, null, 2)}
-          </pre>
-          <button
-            onClick={() => setIsShow(false)}
-            className="mt-2 py-1 px-4 bg-red-500 text-white rounded-lg hover:bg-red-600"
-          >
-            Hide
-          </button>
-        </div>
-      )}
     </div>
   );
 }

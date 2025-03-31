@@ -1,82 +1,96 @@
 import { Link } from "react-router";
 import {
-  BarChart,
-  FilePlus,
-  List,
+  Home,
+  Grid,
+  Plus,
+  Book,
   Calendar,
   LogIn,
   UserPlus,
-  Wallet,
-} from "lucide-react"; // lucide-react에서 아이콘 임포트
+  BookOpen,
+} from "lucide-react"; // Lucide Icons 사용
 
 export default function Top() {
   return (
-    <header className="bg-gray-800 text-white shadow-md">
-      <nav className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-        {/* 왼쪽 로고 또는 사이트 이름 */}
-        <Link
-          to="/"
-          className="text-3xl font-semibold hover:text-yellow-400 transition flex items-center"
-        >
-          <Wallet className="mr-2" /> {/* 홈 아이콘 */}
-          SuperCard
-        </Link>
+    <div className="bg-gray-900 p-4 shadow-md">
+      <nav className="flex flex-wrap justify-between items-center space-x-4">
+        {/* 왼쪽 메뉴 그룹 */}
+        <div className="flex space-x-4">
+          {/* Home Button */}
+          <Link
+            to="/"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-all"
+          >
+            <Home className="w-5 h-5 text-white" />
+            <span className="text-white text-lg">SuperCard</span>
+          </Link>
 
-        {/* 왼쪽 네비게이션 링크들 */}
-        <div className="space-x-6 hidden md:flex">
+          <Link
+            to="/about"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-all"
+          >
+            <BookOpen className="w-5 h-5 text-white" />
+            <span className="text-white text-lg">About</span>
+          </Link>
+
+          {/* Dashboard Button */}
           <Link
             to="/dashboard"
-            className="text-lg hover:text-yellow-400 transition flex items-center"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-all"
           >
-            <BarChart className="mr-2" />
-            Dashboard
+            <Grid className="w-5 h-5 text-white" />
+            <span className="text-white text-lg">Dashboard</span>
           </Link>
+
+          {/* New Card Button */}
           <Link
             to="/new"
-            className="text-lg hover:text-yellow-400 transition flex items-center"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-blue-600 transition-all"
           >
-            <FilePlus className="mr-2" />
-            New Card
+            <Plus className="w-5 h-5 text-white" />
+            <span className="text-white text-lg">New Card</span>
           </Link>
+
+          {/* Cards Button */}
           <Link
             to="/cards"
-            className="text-lg hover:text-yellow-400 transition flex items-center"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-green-600 transition-all"
           >
-            <List className="mr-2" />
-            Cards
+            <Book className="w-5 h-5 text-white" />
+            <span className="text-white text-lg">Cards</span>
           </Link>
+
+          {/* Today Button */}
           <Link
             to="/today"
-            className="text-lg hover:text-yellow-400 transition flex items-center"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-red-600 transition-all"
           >
-            <Calendar className="mr-2" />
-            Today Cards
+            <Calendar className="w-5 h-5 text-white" />
+            <span className="text-white text-lg">Today</span>
           </Link>
         </div>
 
-        {/* 우측 로그인, 회원가입 버튼 */}
-        <div className="space-x-4 hidden md:flex">
+        {/* 우측 메뉴 그룹 (Login, Sign In) */}
+        <div className="flex space-x-4 ml-auto">
+          {/* Login Button */}
           <Link
             to="/login"
-            className="text-lg hover:text-yellow-400 transition flex items-center"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 transition-all"
           >
-            <LogIn className="mr-2" />
-            Login
+            <LogIn className="w-5 h-5 text-white" />
+            <span className="text-white text-lg">Login</span>
           </Link>
+
+          {/* Sign In Button */}
           <Link
             to="/signup"
-            className="text-lg hover:text-yellow-400 transition flex items-center"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 transition-all"
           >
-            <UserPlus className="mr-2" />
-            Sign Up
+            <UserPlus className="w-5 h-5 text-white" />
+            <span className="text-white text-lg">Sign Up</span>
           </Link>
         </div>
-
-        {/* 모바일 메뉴 버튼 (Hamburger 메뉴) */}
-        <div className="md:hidden flex items-center space-x-4">
-          <button className="text-2xl">☰</button>
-        </div>
       </nav>
-    </header>
+    </div>
   );
 }
