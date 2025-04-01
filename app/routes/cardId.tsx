@@ -1,8 +1,8 @@
 //routes/cardId.tsx
-import { Link, useLoaderData, useParams } from "react-router";
+import { Link, redirect, useLoaderData, useParams } from "react-router";
 import { getCardById } from "~/utils/db";
 import type { Route } from "../+types/root";
-import { Edit } from "lucide-react";
+import { Edit, Trash } from "lucide-react";
 
 // loader 함수
 export async function loader({ params }: Route.LoaderArgs) {
@@ -16,6 +16,25 @@ export default function CardId() {
   const loaderData = useLoaderData();
 
   const imageUrl = loaderData.image || "/uploads/default.jpg";
+
+  const handleDelete = async (cardId: number) => {
+    try {
+      const confirm = window.confirm("카드를 삭제하겠습니까?");
+      if (confirm) {
+        const response = await fetch(`/api/card/${cardId}`, {
+          method: "DELETE",
+        });
+        if (response.ok) {
+          console.log(`Card with ID ${cardId} deleted`);
+          return redirect(`/cards`);
+        } else {
+          console.error("Failed to delete the card");
+        }
+      }
+    } catch (error) {
+      console.error("Error occurred while deleting the card:", error);
+    }
+  };
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
@@ -71,10 +90,16 @@ export default function CardId() {
         </div>
         <div className="flex justify-center mt-4">
           <Link to={`/edit/${params.cardId}`}>
-            <button className="flex items-center bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400">
+            <button className="flex items-center mr-2 bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400">
               <Edit className="w-5 h-5 mr-2" /> 수정하기
             </button>
           </Link>
+          <button
+            onClick={() => handleDelete(Number(params.cardId))}
+            className="flex items-center bg-red-500 text-white font-semibold py-2 px-4 rounded-lg hover:bg-red-600 transition duration-200 focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <Trash className="w-5 h-5 mr-2" /> 삭제하기
+          </button>
         </div>
 
         {/* 카드 JSON 정보 출력 (디버깅용) */}

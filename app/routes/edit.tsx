@@ -1,6 +1,6 @@
 import clsx from "clsx";
-import { useEffect, useState } from "react";
-import { Form, useLoaderData, useParams } from "react-router";
+import { useEffect, useRef, useState } from "react";
+import { Form, useLoaderData } from "react-router";
 import type { Route } from "../+types/root";
 import { getCardById } from "~/utils/db";
 
@@ -11,13 +11,17 @@ export async function loader({ params }: Route.LoaderArgs) {
 }
 
 export default function Edit() {
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
   const loadedCard = useLoaderData();
   const [card, setCard] = useState({
+    id: "",
     title: "",
     content: "",
     tier: 1,
     answer: "",
     superCard: "",
+    image: null,
   });
 
   useEffect(() => setCard(loadedCard), []);
@@ -25,40 +29,50 @@ export default function Edit() {
   const [isShow, setShow] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value, type } = e.target;
-    setCard((prevCard) => ({
-      ...prevCard,
-      [name]: type === "number" ? Number(value) : value, // 숫자 타입 처리
-    }));
-  };
+      event:
+        | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+        | React.ChangeEvent<HTMLSelectElement>
+    ) => {
+      const { name, value, type } = event.target;
+  
+      if (
+        type === "file" &&
+        event.target instanceof HTMLInputElement &&
+        event.target.files
+      ) {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            setCard((prevCard) => ({
+              ...prevCard,
+              [name]: reader.result, // 이미지 미리보기 URL 저장
+            }));
+          };
+          reader.readAsDataURL(file);
+        }
+      } else {
+        setCard((prevCard) => ({
+          ...prevCard,
+          [name]: value,
+        }));
+      }
+      console.log(name, ":", value);
+    };
 
   const handleOkBtn = (e: React.FormEvent) => {
     e.preventDefault();
     setShow(!isShow);
   };
 
-  const handleSubmit = async (cardId: number) => {
-    console.log("변경할 내용", card);
-    const updatedCard = card;
+  const handleRemoveImage = () => {
+    setCard((prevCard) => ({
+      ...prevCard,
+      image: null, // 이미지 삭제
+    }));
 
-    try {
-      const response = await fetch(`/api/card/${cardId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedCard),
-      });
-      console.log(response);
-      if (response.ok) {
-        console.log(`Card ${cardId} updated successfully!`);
-        // // ✅ UI 업데이트
-        // setCard(updatedCard);
-      } else {
-        console.error(`Failed to update card ${cardId}`);
-      }
-    } catch (error) {
-      console.error("Error updating card:", error);
+    if (fileInputRef.current) {
+      fileInputRef.current.value = "";
     }
   };
 
@@ -67,7 +81,11 @@ export default function Edit() {
       <h2 className="text-2xl font-semibold text-center mb-6">
         Modify Card: {loadedCard.title}
       </h2>
-      <form>
+      <Form
+        action={`/api/card/${card.id}`}
+        method="put"
+        encType="multipart/form-data"
+      >
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -117,9 +135,9 @@ export default function Edit() {
             <label className="block text-sm font-medium text-gray-700">
               Answer
             </label>
-            <textarea
+            <input
+              type="text"
               name="answer"
-              rows={4}
               value={card.answer}
               onChange={handleChange}
               placeholder="(optional...)"
@@ -139,9 +157,75 @@ export default function Edit() {
               className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
             />
           </div>
+
+          <div className="flex flex-col">
+            <label htmlFor="image" className="font-medium text-gray-700">
+              Image
+            </label>
+            <input
+              id="image"
+              name="image"
+              type="file"
+              accept="image/*"
+              className="file:border file:border-gray-300 file:rounded-lg file:px-4 file:py-2 file:text-sm file:text-gray-700 file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700 focus:file:ring-2 focus:file:ring-blue-500"
+              onChange={handleChange}
+              ref={fileInputRef}
+            />
+          </div>
+
+          {card.image && (
+            <div className="mt-4 relative">
+              <img
+                src={card.image}
+                alt="Uploaded Preview"
+                className="w-full h-auto rounded-lg shadow"
+              />
+              <button
+                onClick={handleRemoveImage}
+                className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600"
+              >
+                삭제
+              </button>
+            </div>
+          )}
+
+          <div className="flex flex-col">
+            <button
+              onClick={handleOkBtn}
+              className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+            >
+              {isShow ? "Hide" : "OK"}
+            </button>
+
+            <div
+              className={clsx("mt-4 mb-4 p-2 border rounded-md bg-gray-100", {
+                hidden: !isShow,
+              })}
+            >
+              {isShow ? (
+                <div>
+                  <div>{card.title && `Title: ${card.title}`}</div>
+                  <div>{card.content && `Content: ${card.content}`}</div>
+                  <div>{card.tier && `Tier: ${card.tier}`}</div>
+                  <div>{card.answer && `Answer: ${card.answer}`}</div>
+                  <div>{card.image && `Image: attached!`}</div>
+                </div>
+              ) : null}
+            </div>
+
+            <button
+              type="submit"
+              className={clsx(
+                "px-4 py-2 border-gray-300 text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50",
+                { hidden: !isShow }
+              )}
+            >
+              Save
+            </button>
+          </div>
         </div>
-      </form>
-      <div className="flex flex-col">
+      </Form>
+      {/* <div className="flex flex-col">
         <button
           onClick={handleOkBtn}
           className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
@@ -164,7 +248,7 @@ export default function Edit() {
         >
           Modify
         </button>
-      </div>
+      </div> */}
     </div>
   );
 }

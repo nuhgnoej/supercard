@@ -7,7 +7,7 @@ import { setCard } from "~/utils/db";
 
 export const action = async ({ request }: Route.ActionArgs) => {
   const formData = await request.formData();
-  console.log(formData);
+  // console.log(formData);
 
   const title = formData.get("title") as string;
   const content = formData.get("content") as string;
@@ -15,20 +15,27 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const answer = formData.get("answer") as string;
   const superCard = formData.get("superCard") as string;
   const file = formData.get("image");
+  let imageUrl = null;
 
-  if (!(file instanceof File)) {
-    return { error: "파일이 올바르지 않습니다.", status: 400 };
+  if (file && file instanceof File) {
+    if (file.size === 0) {
+      console.log("No file uploaded or file size is 0.");
+    } else {
+      console.log("File size:", file.size);
+      
+      imageUrl = await saveImage(file);
+    }
+  } else {
+    console.log("No file or invalid file.");
   }
-
-  const imageUrl = await saveImage(file);
-
+  
   const card = makeCard({
     title,
     content,
     tier,
     answer,
     superCard,
-    image: imageUrl,
+    image: imageUrl ?? undefined,
   });
 
   await setCard(card);

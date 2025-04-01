@@ -46,6 +46,7 @@ export default function App() {
   const navigation = useNavigation();
 
   return (
+    
     <div>
       {navigation.state === "loading" && (
         <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75">
@@ -54,6 +55,7 @@ export default function App() {
       )}
       <Outlet />
     </div>
+    
   );
 }
 

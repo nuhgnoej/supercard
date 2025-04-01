@@ -130,6 +130,7 @@ export const updateCard = async (cardId: number, data: any) => {
     tier,
     superCard,
     answer,
+    image,
   } = data;
 
   const query = `
@@ -144,7 +145,8 @@ export const updateCard = async (cardId: number, data: any) => {
         content=?,
         tier=?,
         superCard=?,
-        answer=?        
+        answer=?,
+        image=?        
       WHERE id = ?
     `;
 
@@ -159,6 +161,7 @@ export const updateCard = async (cardId: number, data: any) => {
     tier,
     superCard,
     answer,
+    image,
     cardId,
   ]);
 
