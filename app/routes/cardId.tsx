@@ -15,7 +15,12 @@ export default function CardId() {
   const params = useParams();
   const loaderData = useLoaderData();
 
-  const imageUrl = loaderData.image || "/uploads/default.jpg";
+  let imageUrl = null;
+  if (loaderData.image) {
+    imageUrl = loaderData.image;
+  } else {
+    const imageUrl = "/uploads/default.jpg";
+  }
 
   const handleDelete = async (cardId: number) => {
     try {
@@ -26,7 +31,6 @@ export default function CardId() {
         });
         if (response.ok) {
           console.log(`Card with ID ${cardId} deleted`);
-          return redirect(`/cards`);
         } else {
           console.error("Failed to delete the card");
         }

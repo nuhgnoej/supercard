@@ -1,7 +1,7 @@
 import { removeCard, updateCard } from "~/utils/db";
 import type { Route } from "../+types/about";
-import { redirect } from "react-router";
 import { saveImage } from "~/utils/card-repo";
+import { redirect } from "react-router";
 
 export async function action({ request, params }: Route.ActionArgs) {
   const id = params.cardId;
@@ -13,7 +13,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     } catch (err) {
       console.error(err);
     }
-    return { success: true, message: `Card with ID ${id} has been deleted.` };
+    return redirect("/cards");
   } else if (request.method === "PUT") {
     const formData = await request.formData();
 
@@ -59,7 +59,7 @@ export async function action({ request, params }: Route.ActionArgs) {
     } catch (err) {
       console.error(err);
     }
-    return { success: true, message: `Card with ID ${id} has been updated.` };
+    return redirect("/cards");
   }
 }
 

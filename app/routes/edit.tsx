@@ -29,36 +29,36 @@ export default function Edit() {
   const [isShow, setShow] = useState(false);
 
   const handleChange = (
-      event:
-        | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-        | React.ChangeEvent<HTMLSelectElement>
-    ) => {
-      const { name, value, type } = event.target;
-  
-      if (
-        type === "file" &&
-        event.target instanceof HTMLInputElement &&
-        event.target.files
-      ) {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            setCard((prevCard) => ({
-              ...prevCard,
-              [name]: reader.result, // 이미지 미리보기 URL 저장
-            }));
-          };
-          reader.readAsDataURL(file);
-        }
-      } else {
-        setCard((prevCard) => ({
-          ...prevCard,
-          [name]: value,
-        }));
+    event:
+      | React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+      | React.ChangeEvent<HTMLSelectElement>
+  ) => {
+    const { name, value, type } = event.target;
+
+    if (
+      type === "file" &&
+      event.target instanceof HTMLInputElement &&
+      event.target.files
+    ) {
+      const file = event.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setCard((prevCard) => ({
+            ...prevCard,
+            [name]: reader.result, // 이미지 미리보기 URL 저장
+          }));
+        };
+        reader.readAsDataURL(file);
       }
-      console.log(name, ":", value);
-    };
+    } else {
+      setCard((prevCard) => ({
+        ...prevCard,
+        [name]: value,
+      }));
+    }
+    console.log(name, ":", value);
+  };
 
   const handleOkBtn = (e: React.FormEvent) => {
     e.preventDefault();
@@ -79,7 +79,7 @@ export default function Edit() {
   return (
     <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg min-w-xl min-h-[calc(100vh-300px)]">
       <h2 className="text-2xl font-semibold text-center mb-6">
-        Modify Card: {loadedCard.title}
+        Modify Card: {JSON.stringify(loadedCard.id)}
       </h2>
       <Form
         action={`/api/card/${card.id}`}
@@ -194,7 +194,7 @@ export default function Edit() {
               onClick={handleOkBtn}
               className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
             >
-              {isShow ? "Hide" : "OK"}
+              {isShow ? "Hide" : "Preview"}
             </button>
 
             <div
