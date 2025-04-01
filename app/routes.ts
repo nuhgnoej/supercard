@@ -6,7 +6,7 @@ import {
 } from "@react-router/dev/routes";
 
 export default [
-  layout("components/Navigation.tsx", [
+  layout("components/Layout.tsx", [
     index("routes/home.tsx"),
     route("about", "./routes/about.tsx"),
     route("new", "./routes/new.tsx"),

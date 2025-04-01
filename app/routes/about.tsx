@@ -3,7 +3,7 @@ import { useState } from "react";
 
 export default function AboutPage() {
   return (
-    <div className="flex items-center justify-center bg-gray-100 py-0 px-4">
+    <div className="flex items-center justify-center shadow-md">
       <div className="max-w-4xl bg-white rounded-2xl shadow-lg border border-gray-200 p-10 space-y-8">
         {/* 상단 섹션 */}
         <div className="flex flex-col md:flex-row items-center">
