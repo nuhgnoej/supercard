@@ -7,7 +7,6 @@ import { setCard } from "~/utils/db";
 
 export const action = async ({ request }: Route.ActionArgs) => {
   const formData = await request.formData();
-  // console.log(formData);
 
   const title = formData.get("title") as string;
   const content = formData.get("content") as string;
@@ -98,14 +97,21 @@ export default function New() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg min-w-xl min-h-[calc(100vh-300px)]">
-      <h2 className="text-2xl font-semibold text-center mb-6">
+    <div
+      className="max-w-2xl mx-auto p-8 rounded-xl shadow-xl min-w-xl min-h-[calc(100vh-300px)]"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4))", // 반투명 그라데이션 배경
+        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)", // 부드러운 그림자
+      }}
+    >
+      <h2 className="text-3xl font-semibold text-center text-white mb-6">
         Create New Card
       </h2>
       <Form action="/new" method="post" encType="multipart/form-data">
-        <div className="space-y-4">
+        <div className="space-y-6">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               Title
             </label>
             <input
@@ -114,12 +120,12 @@ export default function New() {
               value={card.title}
               required
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white "
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               Content
             </label>
             <textarea
@@ -128,14 +134,12 @@ export default function New() {
               value={card.content}
               required
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Tier
-            </label>
+            <label className="block text-sm font-medium text-white">Tier</label>
             <input
               type="number"
               name="tier"
@@ -144,12 +148,12 @@ export default function New() {
               min="1"
               step="1"
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white"
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               Answer
             </label>
             <input
@@ -158,12 +162,12 @@ export default function New() {
               value={card.answer}
               onChange={handleChange}
               placeholder="(optional...)"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white"
             />
           </div>
 
           <div className={clsx("", { hidden: card.tier === 1 })}>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               SuperCard
             </label>
             <input
@@ -171,12 +175,12 @@ export default function New() {
               name="superCard"
               value={card.superCard}
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white"
             />
           </div>
 
           <div className="flex flex-col">
-            <label htmlFor="image" className="font-medium text-gray-700">
+            <label htmlFor="image" className="font-medium text-white">
               Image
             </label>
             <input
@@ -184,60 +188,63 @@ export default function New() {
               name="image"
               type="file"
               accept="image/*"
-              className="file:border file:border-gray-300 file:rounded-lg file:px-4 file:py-2 file:text-sm file:text-gray-700 file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700 focus:file:ring-2 focus:file:ring-blue-500"
+              className="file:border file:border-gray-300 file:rounded-lg file:px-4 file:py-2 file:text-sm file:text-white file:cursor-pointer hover:file:bg-blue-50 hover:file:text-blue-700 focus:file:ring-2 focus:file:ring-blue-500 transition duration-300 ease-in-out text-white"
               onChange={handleChange}
               ref={fileInputRef}
             />
           </div>
 
           {card.image && (
-            <div className="mt-4 relative">
+            <div className="mt-6 relative">
               <img
                 src={card.image}
                 alt="Uploaded Preview"
-                className="w-full h-auto rounded-lg shadow"
+                className="w-full h-auto rounded-lg shadow-md"
               />
               <button
                 onClick={handleRemoveImage}
-                className="absolute top-2 right-2 bg-red-500 text-white px-3 py-1 rounded-lg text-sm hover:bg-red-600"
+                className="absolute top-2 right-2 bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600 transition duration-300 ease-in-out"
               >
-                삭제
+                Remove
               </button>
             </div>
           )}
 
-          <div className="flex flex-col">
+          <div className="flex flex-col mt-6">
             <button
               onClick={handleOkBtn}
-              className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+              className="px-6 py-3 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition duration-300 ease-in-out"
             >
-              {isShow ? "Hide" : "OK"}
+              {isShow ? "Hide" : "Preview"}
             </button>
 
             <div
-              className={clsx("mt-4 mb-4 p-2 border rounded-md bg-gray-100", {
-                hidden: !isShow,
-              })}
+              className={clsx(
+                "mt-4 mb-4 p-4 border rounded-md bg-gray-700 text-white",
+                {
+                  hidden: !isShow,
+                }
+              )}
             >
-              {isShow ? (
+              {isShow && (
                 <div>
                   <div>{card.title && `Title: ${card.title}`}</div>
                   <div>{card.content && `Content: ${card.content}`}</div>
                   <div>{card.tier && `Tier: ${card.tier}`}</div>
                   <div>{card.answer && `Answer: ${card.answer}`}</div>
-                  <div>{card.image && `Image: attached!`}</div>
+                  <div>{card.image && `Image: Attached!`}</div>
                 </div>
-              ) : null}
+              )}
             </div>
 
             <button
               type="submit"
               className={clsx(
-                "px-4 py-2 border-gray-300 text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50",
+                "px-6 py-3 text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50 transition duration-300 ease-in-out",
                 { hidden: !isShow }
               )}
             >
-              Save
+              Save Card
             </button>
           </div>
         </div>

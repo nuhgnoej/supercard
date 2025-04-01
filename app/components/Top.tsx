@@ -12,7 +12,10 @@ import {
 
 export default function Top() {
   return (
-    <div className="bg-gray-900 p-4 shadow-md">
+    <div
+      className="bg-gray-900 p-4 shadow-md sticky top-0 z-10"
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+    >
       <nav className="flex flex-wrap justify-between items-center space-x-4">
         {/* 왼쪽 메뉴 그룹 */}
         <div className="flex space-x-4">
@@ -21,8 +24,10 @@ export default function Top() {
             to="/"
             className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-all"
           >
-            <Home className="w-5 h-5 text-white" />
-            <span className="text-white text-lg">SuperCard</span>
+            <Home className="w-7 h-7 text-white" />
+            <span className="text-white text-2xl font-extrabold leading-tight">
+              SuperCard
+            </span>
           </Link>
 
           <Link

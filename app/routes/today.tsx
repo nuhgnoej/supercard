@@ -117,15 +117,20 @@ export default function Page() {
           {cardList.map((card: Card & { id: number }) => (
             <div
               key={card.id}
-              className="bg-white p-4 rounded-lg shadow-md hover:shadow-xl transition-shadow"
+              className="p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow"
+              style={{
+                background:
+                  "linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4))", // 반투명 그라데이션 배경
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)", // 부드러운 그림자
+              }}
             >
               <Link to={`/card/${card.id}`}>
-                <h3 className="text-xl font-semibold text-blue-600">
+                <h3 className="text-xl font-semibold text-white">
                   {card.title}
                 </h3>
               </Link>
-              <p className="text-gray-700 mt-2">{card.content}</p>
-              <p className={clsx("text-gray-500 mt-2", { hidden: true })}>
+              <p className="text-gray-200 mt-2">{card.content}</p>
+              <p className={clsx("text-gray-300 mt-2", { hidden: true })}>
                 {card.answer}
               </p>
 
@@ -141,13 +146,13 @@ export default function Page() {
 
               {/* 부가정보 영역 */}
               <div className="mt-4 flex">
-                <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2">
+                <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2">
                   Tier: {card.tier}
                 </span>
-                <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2">
+                <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2">
                   Box: {card.box}
                 </span>
-                <span className="inline-block bg-green-100 text-green-800 px-3 py-1 rounded-full text-sm mr-2">
+                <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2">
                   Count: {card.reviewCount}
                 </span>
               </div>

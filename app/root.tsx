@@ -46,8 +46,14 @@ export default function App() {
   const navigation = useNavigation();
 
   return (
-    
-    <div>
+    <div
+      style={{
+        backgroundImage: "url(bgImg-1.jpg)", // 이미지 경로
+        backgroundSize: "cover", // 이미지가 배경을 완전히 덮도록
+        backgroundPosition: "center center", // 이미지를 중앙에 배치
+        backgroundRepeat: "no-repeat",
+      }}
+    >
       {navigation.state === "loading" && (
         <div className="fixed inset-0 flex items-center justify-center bg-white bg-opacity-75">
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
@@ -55,7 +61,6 @@ export default function App() {
       )}
       <Outlet />
     </div>
-    
   );
 }
 
