@@ -1,3 +1,4 @@
+//routes/cardId.tsx
 import { Link, useLoaderData, useParams } from "react-router";
 import { getCardById } from "~/utils/db";
 import type { Route } from "../+types/root";
@@ -14,12 +15,23 @@ export default function CardId() {
   const params = useParams();
   const loaderData = useLoaderData();
 
+  const imageUrl = loaderData.image || "/uploads/default.jpg";
+
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
       <div className="bg-white p-6 rounded-lg shadow-lg">
         <h3 className="text-3xl font-bold text-center text-blue-600 mb-4">
           Card Details: {params.cardId}
         </h3>
+
+        {/* 카드 이미지 표시 */}
+        <div className="flex justify-center mb-4">
+          <img
+            src={imageUrl}
+            alt="Card Image"
+            className="max-w-[500px] max-h-[300px] w-full h-auto rounded-lg shadow-md"
+          />
+        </div>
 
         {/* 카드 정보 */}
         <div className="space-y-4">

@@ -2,7 +2,7 @@ import clsx from "clsx";
 import React, { useRef, useState } from "react";
 import { Form, redirect } from "react-router";
 import type { Route } from "../+types/root";
-import { makeCard } from "~/utils/card-repo";
+import { makeCard, saveImage } from "~/utils/card-repo";
 import { setCard } from "~/utils/db";
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -14,9 +14,25 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const tier = Number(formData.get("tier"));
   const answer = formData.get("answer") as string;
   const superCard = formData.get("superCard") as string;
-  const card = makeCard({ title, content, tier, answer, superCard });
+  const file = formData.get("image");
+
+  if (!(file instanceof File)) {
+    return { error: "파일이 올바르지 않습니다.", status: 400 };
+  }
+
+  const imageUrl = await saveImage(file);
+
+  const card = makeCard({
+    title,
+    content,
+    tier,
+    answer,
+    superCard,
+    image: imageUrl,
+  });
 
   await setCard(card);
+
   return redirect("/cards");
 };
 
@@ -87,7 +103,7 @@ export default function New() {
       <h2 className="text-2xl font-semibold text-center mb-6">
         Create New Card
       </h2>
-      <Form action="/new" method="post">
+      <Form action="/new" method="post" encType="multipart/form-data">
         <div className="space-y-4">
           <div>
             <label className="block text-sm font-medium text-gray-700">
@@ -210,6 +226,7 @@ export default function New() {
                   <div>{card.content && `Content: ${card.content}`}</div>
                   <div>{card.tier && `Tier: ${card.tier}`}</div>
                   <div>{card.answer && `Answer: ${card.answer}`}</div>
+                  <div>{card.image && `Image: attached!`}</div>
                 </div>
               ) : null}
             </div>
