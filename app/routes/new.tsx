@@ -17,18 +17,10 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const file = formData.get("image");
   let imageUrl = null;
 
-  if (file && file instanceof File) {
-    if (file.size === 0) {
-      console.log("No file uploaded or file size is 0.");
-    } else {
-      console.log("File size:", file.size);
-      
-      imageUrl = await saveImage(file);
-    }
-  } else {
-    console.log("No file or invalid file.");
+  if (file && file instanceof File && file.size > 0) {
+    imageUrl = await saveImage(file);
   }
-  
+
   const card = makeCard({
     title,
     content,

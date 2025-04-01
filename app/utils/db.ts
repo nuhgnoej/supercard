@@ -106,7 +106,7 @@ export const getCardToday = async () => {
 export const getCardById = async (id: number) => {
   const db = await openDb();
   const card = await db.get(`SELECT * FROM cards WHERE id = ?`, [id]);
-  console.log(card);
+  // console.log(card);
   return card;
 };
 
@@ -119,63 +119,63 @@ export const removeCard = async (id: number) => {
 
 export const updateCard = async (cardId: number, data: any) => {
   const db = await openDb();
-  const {
-    box,
-    reviewInterval,
-    nextReview,
-    lastReview,
-    reviewCount,
-    title,
-    content,
-    tier,
-    superCard,
-    answer,
-    image,
-  } = data;
 
-  const query = `
-      UPDATE cards
-      SET
-        box = ?,
-        reviewInterval = ?,
-        nextReview = ?,
-        lastReview = ?,
-        reviewCount = ?,
-        title =?,
-        content=?,
-        tier=?,
-        superCard=?,
-        answer=?,
-        image=?        
-      WHERE id = ?
-    `;
-
-  await db.run(query, [
-    box,
-    reviewInterval,
-    nextReview, // nextReview는 Date로 변환된 값이 필요함
-    lastReview, // lastReview도 마찬가지로 Date로 변환된 값
-    reviewCount,
-    title,
-    content,
-    tier,
-    superCard,
-    answer,
-    image,
+  const existingCard = await db.get("SELECT * FROM cards WHERE id = ?", [
     cardId,
   ]);
 
-  return {
-    cardId,
-    box,
-    reviewInterval,
-    nextReview,
-    lastReview,
-    reviewCount,
-    title,
-    content,
-    tier,
-    superCard,
-    answer,
+  if (!existingCard) {
+    throw new Error("Card not found");
+  }
+
+  // 2️⃣ data에 없는 값은 기존 값으로 유지
+  const updatedData = {
+    box: data.box ?? existingCard.box,
+    reviewInterval: data.reviewInterval ?? existingCard.reviewInterval,
+    nextReview: data.nextReview ?? existingCard.nextReview,
+    lastReview: data.lastReview ?? existingCard.lastReview,
+    reviewCount: data.reviewCount ?? existingCard.reviewCount,
+    title: data.title ?? existingCard.title,
+    content: data.content ?? existingCard.content,
+    tier: data.tier ?? existingCard.tier,
+    superCard: data.superCard ?? existingCard.superCard,
+    answer: data.answer ?? existingCard.answer,
+    image: data.image ?? existingCard.image,
   };
+
+  const query = `
+    UPDATE cards
+    SET
+      box = ?,
+      reviewInterval = ?,
+      nextReview = ?,
+      lastReview = ?,
+      reviewCount = ?,
+      title = ?,
+      content = ?,
+      tier = ?,
+      superCard = ?,
+      answer = ?,
+      image = ?        
+    WHERE id = ?
+  `;
+
+  await db.run(query, [
+    updatedData.box,
+    updatedData.reviewInterval,
+    updatedData.nextReview,
+    updatedData.lastReview,
+    updatedData.reviewCount,
+    updatedData.title,
+    updatedData.content,
+    updatedData.tier,
+    updatedData.superCard,
+    updatedData.answer,
+    updatedData.image,
+    cardId,
+  ]);
+
+  console.log(`Card with ID ${cardId} has been updated.`);
+
+  return { cardId, ...updatedData };
 };

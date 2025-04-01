@@ -24,6 +24,12 @@ export async function action({ request, params }: Route.ActionArgs) {
     const supercard = formData.get("supercard");
     const file = formData.get("image");
 
+    const box = formData.get("box");
+    const reviewInterval = formData.get("reviewInterval");
+    const nextReview = formData.get("nextReview");
+    const lastReview = formData.get("lastReview");
+    const reviewCount = formData.get("reviewCount");
+
     let image = null;
 
     if (file && file instanceof File) {
@@ -32,12 +38,23 @@ export async function action({ request, params }: Route.ActionArgs) {
       }
     }
 
-    const data = { title, content, tier, answer, supercard, image };
+    const data = {
+      title,
+      content,
+      tier,
+      answer,
+      supercard,
+      box,
+      reviewInterval,
+      nextReview,
+      lastReview,
+      reviewCount,
+      image,
+    };
 
     try {
       if (id) {
         await updateCard(Number(id), data);
-        return redirect("/cards");
       }
     } catch (err) {
       console.error(err);

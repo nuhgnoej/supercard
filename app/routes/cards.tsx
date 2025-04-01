@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useLoaderData } from "react-router";
 import { getCardsAll } from "~/utils/db";
-import { Trash, CheckCircle, ThumbsUp, ThumbsDown } from "lucide-react";
+import { Trash, CheckCircle, ThumbsUp, ThumbsDown, Edit } from "lucide-react";
 import type { Card } from "~/utils/card-repo";
 import { Link } from "react-router";
 import clsx from "clsx";
@@ -13,7 +13,7 @@ export const loader = async () => {
   return cards;
 };
 
-export default function Cards() {
+export default function Page() {
   const cards = useLoaderData(); // loader에서 반환된 데이터를 사용
   const [cardList, setCardList] = useState(cards); // 카드 목록 상태 관리
   const [success, setSuccess] = useState<{ [key: number]: boolean }>({});
@@ -60,36 +60,46 @@ export default function Cards() {
     const updatedNextReview = new Date();
     updatedNextReview.setDate(updatedNextReview.getDate() + updatedInterval);
 
-    const updatedCard = {
-      ...card,
-      box: updatedBox,
-      reviewInterval: updatedInterval,
-      nextReview: updatedNextReview.toISOString().split("T")[0],
-      lastReview: today,
-      reviewCount: updatedReviewCount,
-    };
+    // ✅ FormData 객체 생성
+    const formData = new FormData();
+    formData.append("box", String(updatedBox));
+    formData.append("reviewInterval", String(updatedInterval));
+    formData.append(
+      "nextReview",
+      updatedNextReview.toISOString().split("T")[0]
+    );
+    formData.append("lastReview", today);
+    formData.append("reviewCount", String(updatedReviewCount));
+
+    console.log(`📢 Sending PUT request to /api/card/${cardId}`);
+    console.log("📦 FormData:", Object.fromEntries(formData.entries()));
 
     try {
       const response = await fetch(`/api/card/${cardId}`, {
         method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(updatedCard),
+        headers: {
+          Accept: "application/json",
+        },
+        body: formData,
       });
 
       if (response.ok) {
-        console.log(`Card ${cardId} updated successfully!`);
+        console.log(`🎉 Card ${cardId} updated successfully!`);
 
         // ✅ UI 업데이트
         setCardList((prevList: typeof cardList) =>
           prevList.map((c: Card & { id: number }) =>
-            c.id === cardId ? updatedCard : c
+            c.id === cardId
+              ? { ...card, ...Object.fromEntries(formData.entries()) }
+              : c
           )
         );
       } else {
-        console.error(`Failed to update card ${cardId}`);
+        const errorData = await response.json();
+        console.error(`❌ Failed to update card ${cardId}:`, errorData);
       }
     } catch (error) {
-      console.error("Error updating card:", error);
+      console.error("🚨 Error updating card:", error);
     }
   };
 
@@ -144,6 +154,16 @@ export default function Cards() {
 
               {/* 버튼 영역 */}
               <div className="mt-4 flex justify-end space-x-4">
+                {/* 수정 버튼 */}
+                <button
+                  className="bg-blue-500 text-white p-2 rounded-md hover:bg-blue-600 transition"
+                  title="update"
+                >
+                  <Link to={`/edit/${card.id}`}>
+                    <Edit className="w-5 h-5" />
+                  </Link>
+                </button>
+
                 {/* 삭제 버튼 */}
                 <button
                   onClick={() => handleDelete(card.id)}
