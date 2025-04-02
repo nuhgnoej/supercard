@@ -15,6 +15,7 @@ export type Card = {
   reviewInterval: number;
   class?: string;
   image?: string;
+  user: string;
 };
 
 export type CardProp = {
@@ -24,6 +25,7 @@ export type CardProp = {
   answer?: string;
   superCard?: string;
   image?: string;
+  user: string;
 };
 
 export const makeCard = (card: CardProp) => {
@@ -34,6 +36,9 @@ export const makeCard = (card: CardProp) => {
   const nextReview = lastReview; // test
   const reviewCount = 0;
   const box = 1;
+
+  console.log("makeCard 함수내 콘솔메세지: ", card.user);
+
   return {
     ...card,
     startDate,

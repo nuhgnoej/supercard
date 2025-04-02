@@ -8,7 +8,7 @@ import { Link } from "react-router";
 import clsx from "clsx";
 import type { LoaderFunctionArgs } from "react-router";
 import { redirect } from "react-router";
-import { getSession } from "~/utils/session.server";
+import { getSession, getUser } from "~/utils/session.server";
 
 // loader 함수에서 카드 데이터를 불러옴
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -19,12 +19,16 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect("/login");
   }
 
+  const user = await getUser(request);
+
   const cards = await getCardsAll();
-  return cards;
+  return { user, cards };
 };
 
 export default function Page() {
-  const cards = useLoaderData(); // loader에서 반환된 데이터를 사용
+  const data = useLoaderData(); // loader에서 반환된 데이터를 사용
+  const cards = data.cards;
+
   const [cardList, setCardList] = useState(cards); // 카드 목록 상태 관리
   const [success, setSuccess] = useState<{ [key: number]: boolean }>({});
 
@@ -154,6 +158,7 @@ export default function Page() {
               <p className={clsx("text-white mt-2", { hidden: true })}>
                 {card.answer}
               </p>
+              <p className="text-white mt-2">Author: {data.user.name}</p>
 
               {/* 날짜 정보 영역 */}
               <div className="mt-4">

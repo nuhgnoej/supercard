@@ -1,6 +1,11 @@
 import clsx from "clsx";
 import React, { useRef, useState } from "react";
-import { Form, redirect, type LoaderFunctionArgs } from "react-router";
+import {
+  Form,
+  redirect,
+  useLoaderData,
+  type LoaderFunctionArgs,
+} from "react-router";
 import type { Route } from "../+types/root";
 import { makeCard, saveImage } from "~/utils/card-repo";
 import { setCard } from "~/utils/db";
@@ -20,7 +25,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect("/login");
   }
 
-  return { name: user.name, email: user.email };
+  return { id: user.id, name: user.name, email: user.email };
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -32,6 +37,10 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const answer = formData.get("answer") as string;
   const superCard = formData.get("superCard") as string;
   const file = formData.get("image");
+  const user = formData.get("user") as string;
+
+  console.log("action user:", user);
+
   let imageUrl = null;
 
   if (file && file instanceof File && file.size > 0) {
@@ -45,6 +54,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     answer,
     superCard,
     image: imageUrl ?? undefined,
+    user: user,
   });
 
   await setCard(card);
@@ -55,6 +65,9 @@ export const action = async ({ request }: Route.ActionArgs) => {
 export default function New() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
+  const user = useLoaderData<typeof loader>();
+  console.log("loaderData:", user);
+
   const [card, setCard] = useState({
     title: "",
     content: "",
@@ -62,6 +75,7 @@ export default function New() {
     answer: "",
     superCard: "",
     image: "",
+    user: user.id,
   });
 
   const [isShow, setShow] = useState(false);
@@ -127,6 +141,7 @@ export default function New() {
         Create New Card
       </h2>
       <Form action="/new" method="post" encType="multipart/form-data">
+        <input type="hidden" name="user" value={user.id} />
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-white">

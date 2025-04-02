@@ -42,13 +42,14 @@ export const setCard = async (card: Card) => {
             reviewCount INTEGER,
             reviewInterval INTEGER,
             superCard INTEGER,
-            image TEXT
+            image TEXT,
+            user TEXT
      )`
   );
 
   await db.run(
-    `INSERT INTO cards (title, content, answer, tier, box, startDate, lastReview, nextReview, reviewCount, reviewInterval, image) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)`,
+    `INSERT INTO cards (title, content, answer, tier, box, startDate, lastReview, nextReview, reviewCount, reviewInterval, image, user) 
+    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?)`,
     [
       card.title,
       card.content,
@@ -61,6 +62,7 @@ export const setCard = async (card: Card) => {
       card.reviewCount,
       card.reviewInterval,
       card.image,
+      card.user,
     ]
   );
 

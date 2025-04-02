@@ -21,6 +21,7 @@ model cards {
   reviewInterval Int?
   superCard      Int?
   image          String?
+  user           String?
 }
 
 model users {

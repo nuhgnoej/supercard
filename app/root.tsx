@@ -52,7 +52,6 @@ export default function App() {
   const navigation = useNavigation();
   const data = useLoaderData<typeof rootLoader>() ?? { user: null }; // 서버에서 받아온 데이터
   const user = data.user;
-  console.log("root user:", user);
 
   return (
     <div

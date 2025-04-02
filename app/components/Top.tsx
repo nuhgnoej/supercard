@@ -11,18 +11,12 @@ import {
 } from "lucide-react"; // Lucide Icons 사용
 import clsx from "clsx";
 
-// import type { loader as rootLoader } from "~/routes/root.server";
-
-// export { loader } from "~/routes/root.server";
-
 export default function Top(user: any) {
-  // const data = useLoaderData<typeof rootLoader>() ?? { user: null }; // 서버에서 받아온 데이터
-  // const user = data.user;
   console.log("Component user:", user);
   return (
     <div
       className="bg-gray-900 p-4 shadow-md sticky top-0 z-10"
-      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+      style={{ backgroundColor: "rgba(0, 0, 0, 0.2)" }}
     >
       <nav className="flex flex-wrap justify-between items-center space-x-4">
         {/* 왼쪽 메뉴 그룹 */}
@@ -108,7 +102,17 @@ export default function Top(user: any) {
             <span className="text-white text-lg">Sign Up</span>
           </Link>
         </div>
+
         {/* 로그아웃 버튼 */}
+        <div
+          className={clsx(
+            "flex items-center space-x-2 px-4 py-2 rounded-lg transition-all",
+            { hidden: user.user === null }
+          )}
+        >
+          <div>환영합니다. {user.user?.name}님!</div>
+        </div>
+
         <div
           className={clsx(
             "flex items-center space-x-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 transition-all",
