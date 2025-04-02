@@ -3,8 +3,8 @@ import { Github, Twitter, Linkedin } from "lucide-react"; // 아이콘 이름 �
 export default function Footer() {
   return (
     <footer
-      className="text-white py-6"
-      style={{ backgroundColor: "rgba(0, 0, 0, 0.5)" }}
+      className="text-white py-6 bottom-0 w-full"
+      style={{ backgroundColor: "rgba(0, 0, 0, 0)" }}
     >
       <div className="max-w-7xl mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-between items-center">
