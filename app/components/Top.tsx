@@ -1,4 +1,4 @@
-import { Link, useLoaderData } from "react-router";
+import { Link, useLoaderData, useNavigate } from "react-router";
 import {
   Home,
   Grid,
@@ -11,8 +11,21 @@ import {
 } from "lucide-react"; // Lucide Icons 사용
 import clsx from "clsx";
 
+import { useRef, useState, useTransition } from "react"; // ✅ useTransition 추가
+import { Loader2 } from "lucide-react"; // ✅ Lucide 아이콘에서 로딩 스피너 추가
+
 export default function Top(user: any) {
-  console.log("Component user:", user);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  const handleLogout = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault(); // 기본 제출 막기
+    setIsLoggingOut(true);
+
+    setTimeout(() => {
+      (e.target as HTMLFormElement).submit(); // ✅ form 직접 제출 (진짜 작동함)
+    }, 1500);
+  };
+
   return (
     <div
       className="bg-gray-900 p-4 shadow-md sticky top-0 z-10"
@@ -119,10 +132,20 @@ export default function Top(user: any) {
             { hidden: user.user === null }
           )}
         >
-          <LogIn className="w-5 h-5 text-white" />
-          <form method="post" action="/logout">
-            <button className="text-white text-lg" type="submit">
-              Logout
+          <form method="post" action="/logout" onSubmit={handleLogout}>
+            <button
+              className="relative flex items-center justify-center h-10 w-32 bg-red-600 hover:bg-red-500 text-white rounded-lg transition-all disabled:opacity-50"
+              type="submit"
+              disabled={isLoggingOut}
+            >
+              {isLoggingOut ? (
+                <Loader2 className="w-5 h-5 animate-spin" />
+              ) : (
+                <>
+                  <LogIn className="w-5 h-5 mr-2" />
+                  Logout
+                </>
+              )}
             </button>
           </form>
         </div>
