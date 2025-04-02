@@ -19,5 +19,6 @@ export default [
     route("card/:cardId", "./routes/cardId.tsx"),
     route("edit/:cardId", "./routes/edit.tsx"),
     route("api/card/:cardId", "./routes/api/card.tsx"),
+    route("logout", "./routes/logout.tsx"),
   ]),
 ] satisfies RouteConfig;

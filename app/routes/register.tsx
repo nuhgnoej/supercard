@@ -1,13 +1,27 @@
-import { useState } from "react";
+import bcrypt from "bcryptjs";
+import type { ActionFunctionArgs } from "react-router";
+import { Form } from "react-router";
+import { redirect, useActionData } from "react-router";
+import { prisma } from "~/utils/db.server";
 
-export default function Page() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export const action = async ({ request }: ActionFunctionArgs) => {
+  const formData = await request.formData();
+  const email = formData.get("email") as string;
+  const password = formData.get("password") as string;
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("📢 Login Attempt:", { email, password });
-  };
+  const hashedPassword = await bcrypt.hash(password, 10);
+  try {
+    await prisma.user.create({
+      data: { email, password: hashedPassword },
+    });
+    return redirect("/login");
+  } catch {
+    return { error: "이미 존재하는 이메일입니다." };
+  }
+};
+
+export default function RegisterPage() {
+  const actionData = useActionData<typeof action>();
 
   return (
     <div className="flex items-center justify-center">
@@ -15,61 +29,60 @@ export default function Page() {
         className="p-8 rounded-lg shadow-lg w-96"
         style={{
           background:
-            "linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4))", // 반투명 그라데이션 배경
-          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)", // 부드러운 그림자
+            "linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4))",
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
         }}
       >
-        <h2 className="text-2xl text-white font-bold text-center mb-6">
-          계정 만들기
-        </h2>
+        <h1 className="text-3xl font-bold text-center text-white mb-6">
+          회원가입
+        </h1>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <Form method="post" className="space-y-5">
           {/* 이메일 입력 */}
           <div>
-            <label className="block text-white">이메일</label>
+            <label className="block text-gray-300 mb-1">이메일</label>
             <input
               type="email"
-              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white"
+              name="email"
+              className="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               placeholder="your-email@email.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
               required
             />
           </div>
 
           {/* 비밀번호 입력 */}
           <div>
-            <label className="block text-white">비밀번호</label>
+            <label className="block text-gray-300 mb-1">비밀번호</label>
             <input
               type="password"
-              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white"
+              name="password"
+              className="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
               required
             />
           </div>
 
-          {/* 회원가입 버튼 */}
+          {/* 가입 버튼 */}
           <button
             type="submit"
-            className="w-full bg-blue-500 text-white py-2 rounded-lg hover:bg-blue-600 transition"
+            className="w-full py-3 text-white font-semibold bg-blue-500 rounded-lg hover:bg-blue-600 transition duration-200"
           >
-            계정 생성
+            가입하기
           </button>
-        </form>
+        </Form>
 
-        {/* 추가 링크 */}
-        <div className="text-center mt-4 text-sm text-white">
-          <a href="/login" className="hover:underline">
-            로그인
-          </a>{" "}
-          |
-          <a href="/forgot" className="hover:underline">
-            {" "}
-            계정/비밀번호 찾기
+        {/* 에러 메시지 */}
+        {actionData?.error && (
+          <p className="mt-4 text-center text-red-400">{actionData.error}</p>
+        )}
+
+        {/* 로그인 링크 */}
+        <p className="mt-4 text-center text-gray-400">
+          이미 계정이 있나요?{" "}
+          <a href="/login" className="text-blue-400 hover:underline">
+            로그인하기
           </a>
-        </div>
+        </p>
       </div>
     </div>
   );

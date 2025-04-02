@@ -7,6 +7,12 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
+if (process) {
+  console.log(process.env.odineyes);
+} else {
+  console.log(":(");
+}
+
 export const dbPath = path.join(
   process.cwd(),
   process.env.DATABASE_PATH || "./data/app.db"
