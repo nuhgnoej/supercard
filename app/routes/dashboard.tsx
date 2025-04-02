@@ -16,16 +16,18 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect("/login");
   }
 
-  return { email: user.email };
+  return { name: user.name, email: user.email };
 };
 
 export default function Dashboard() {
-  const { email } = useLoaderData<typeof loader>();
+  const { name, email } = useLoaderData<typeof loader>();
 
   return (
     <div>
       <h1>대시보드</h1>
-      <p>환영합니다, {email}님!</p>
+      <p>
+        환영합니다, {name} ({email})님!
+      </p>
       <form method="post" action="/logout">
         <button type="submit">로그아웃</button>
       </form>

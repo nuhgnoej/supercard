@@ -1,4 +1,4 @@
-import { Link } from "react-router";
+import { Link, useLoaderData } from "react-router";
 import {
   Home,
   Grid,
@@ -9,8 +9,16 @@ import {
   UserPlus,
   BookOpen,
 } from "lucide-react"; // Lucide Icons 사용
+import clsx from "clsx";
 
-export default function Top() {
+// import type { loader as rootLoader } from "~/routes/root.server";
+
+// export { loader } from "~/routes/root.server";
+
+export default function Top(user: any) {
+  // const data = useLoaderData<typeof rootLoader>() ?? { user: null }; // 서버에서 받아온 데이터
+  // const user = data.user;
+  console.log("Component user:", user);
   return (
     <div
       className="bg-gray-900 p-4 shadow-md sticky top-0 z-10"
@@ -75,12 +83,14 @@ export default function Top() {
           </Link>
         </div>
 
-        {/* 우측 메뉴 그룹 (Login, Sign In) */}
         <div className="flex space-x-4 ml-auto">
           {/* Login Button */}
           <Link
             to="/login"
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 transition-all"
+            className={clsx(
+              "flex items-center space-x-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 transition-all",
+              { hidden: user.user !== null }
+            )}
           >
             <LogIn className="w-5 h-5 text-white" />
             <span className="text-white text-lg">Login</span>
@@ -89,11 +99,28 @@ export default function Top() {
           {/* Sign In Button */}
           <Link
             to="/register"
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 transition-all"
+            className={clsx(
+              "flex items-center space-x-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 transition-all",
+              { hidden: user.user !== null }
+            )}
           >
             <UserPlus className="w-5 h-5 text-white" />
             <span className="text-white text-lg">Sign Up</span>
           </Link>
+        </div>
+        {/* 로그아웃 버튼 */}
+        <div
+          className={clsx(
+            "flex items-center space-x-2 px-4 py-2 rounded-lg bg-red-600 hover:bg-red-500 transition-all",
+            { hidden: user.user === null }
+          )}
+        >
+          <LogIn className="w-5 h-5 text-white" />
+          <form method="post" action="/logout">
+            <button className="text-white text-lg" type="submit">
+              Logout
+            </button>
+          </form>
         </div>
       </nav>
     </div>

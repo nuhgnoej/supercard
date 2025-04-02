@@ -1,9 +1,27 @@
 import clsx from "clsx";
 import React, { useRef, useState } from "react";
-import { Form, redirect } from "react-router";
+import { Form, redirect, type LoaderFunctionArgs } from "react-router";
 import type { Route } from "../+types/root";
 import { makeCard, saveImage } from "~/utils/card-repo";
 import { setCard } from "~/utils/db";
+import { getSession } from "~/utils/session.server";
+import { prisma } from "~/utils/db.server";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const session = await getSession(request);
+  const userId = session.get("userId");
+
+  if (!userId) {
+    return redirect("/login");
+  }
+
+  const user = await prisma.users.findUnique({ where: { id: userId } });
+  if (!user) {
+    return redirect("/login");
+  }
+
+  return { name: user.name, email: user.email };
+};
 
 export const action = async ({ request }: Route.ActionArgs) => {
   const formData = await request.formData();

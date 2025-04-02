@@ -6,9 +6,19 @@ import { Trash, CheckCircle, ThumbsUp, ThumbsDown, Edit } from "lucide-react";
 import type { Card } from "~/utils/card-repo";
 import { Link } from "react-router";
 import clsx from "clsx";
+import type { LoaderFunctionArgs } from "react-router";
+import { redirect } from "react-router";
+import { getSession } from "~/utils/session.server";
 
 // loader 함수에서 카드 데이터를 불러옴
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const session = await getSession(request);
+  const userId = session.get("userId");
+
+  if (!userId) {
+    return redirect("/login");
+  }
+
   const cards = await getCardToday();
   return cards;
 };

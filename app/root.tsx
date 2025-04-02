@@ -10,6 +10,7 @@ import {
 import type { Route } from "./+types/root";
 import "./app.css";
 import { useNavigation } from "react-router";
+import { useLoaderData } from "react-router";
 
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
@@ -42,8 +43,16 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+import type { loader as rootLoader } from "~/routes/root.server";
+import Top from "./components/Top";
+
+export { loader } from "~/routes/root.server";
+
 export default function App() {
   const navigation = useNavigation();
+  const data = useLoaderData<typeof rootLoader>() ?? { user: null }; // 서버에서 받아온 데이터
+  const user = data.user;
+  console.log("root user:", user);
 
   return (
     <div
@@ -59,6 +68,7 @@ export default function App() {
           <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-blue-500"></div>
         </div>
       )}
+      <Top user={user} />
       <Outlet />
     </div>
   );
