@@ -119,9 +119,20 @@ export default function Page() {
               key={card.id}
               className="p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow"
               style={{
-                background:
-                  "linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4))", // 반투명 그라데이션 배경
-                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)", // 부드러운 그림자
+                ...(card.image
+                  ? {
+                      backgroundImage: `url(${card.image})`,
+                      backgroundBlendMode: "multiply",
+                      backgroundColor: "rgba(0, 0, 0, 0.6)",
+                    }
+                  : {
+                      backgroundColor: "rgba(0, 0, 0, 0.6)",
+                    }),
+                backgroundSize: "cover",
+                backgroundPosition: "center center",
+                backgroundRepeat: "no-repeat",
+                boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
+                opacity: 0.9,
               }}
             >
               <Link to={`/card/${card.id}`}>
@@ -129,17 +140,17 @@ export default function Page() {
                   {card.title}
                 </h3>
               </Link>
-              <p className="text-gray-200 mt-2">{card.content}</p>
-              <p className={clsx("text-gray-300 mt-2", { hidden: true })}>
+              <p className="text-white mt-2">{card.content}</p>
+              <p className={clsx("text-white mt-2", { hidden: true })}>
                 {card.answer}
               </p>
 
               {/* 날짜 정보 영역 */}
               <div className="mt-4">
-                <div className="mt-2 text-sm text-gray-400">
+                <div className="mt-2 text-sm text-white">
                   <p>Last Review: {card.lastReview}</p>
                 </div>
-                <div className="mt-2 text-sm text-gray-400">
+                <div className="mt-2 text-sm text-white">
                   <p>Next Review: {card.nextReview}</p>
                 </div>
               </div>
