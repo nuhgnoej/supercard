@@ -62,7 +62,7 @@ export default function AboutPage() {
               </li>
               <li className="flex items-center space-x-2">
                 <Database className="w-5 h-5 text-green-500" />
-                <span>Database : SQLite</span>
+                <span>Database : SQLite + Prisma</span>
               </li>
               <li className="flex items-center space-x-2">
                 <PaintBucket className="w-5 h-5 text-indigo-400" />

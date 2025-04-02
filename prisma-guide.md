@@ -101,3 +101,34 @@ npx prisma generate
 npx prisma db pull
 npx prisma generate // 스키마에 변경이 생기면 필수적으로 실행해야 한다.
 ```
+
+## 8. sql문과 prisma 메서드
+
+### 테이블 생성
+
+- SQLite (SQL문): CREATE TABLE IF NOT EXISTS ... prisma migrate dev (자동 생성)
+
+### 데이터 삽입 (INSERT)
+
+- SQLite (SQL문) : sql INSERT INTO cards (title, content) VALUES (?, ?); ts await prisma.card.create({ data: { title: "제목", content: "내용" } });
+- Prisma (Prisma Client):
+
+### 데이터 조회
+
+- SQLite (SQL문): (SELECT) sql SELECT \_ FROM cards;
+- Prisma (Prisma Client): ts const cards = await prisma.card.findMany();
+
+### 특정 데이터 조회 (WHERE 조건 검색)
+
+- SQLite (SQL문): sql SELECT \_ FROM cards WHERE id = ?;
+- Prisma (Prisma Client): ts const card = await prisma.card.findUnique({ where: { id: 1 } });
+
+### 데이터 수정 (UPDATE)
+
+- SQLite (SQL문): sql UPDATE cards SET title = ? WHERE id = ?;
+- Prisma (Prisma Client): ts await prisma.card.update({ where: { id: 1 }, data: { title: "새 제목" } });
+
+### 데이터 삭제 (DELETE)
+
+- SQLite (SQL문): sql DELETE FROM cards WHERE id = ?;
+- Prisma (Prisma Client): ts await prisma.card.delete({ where: { id: 1 } });

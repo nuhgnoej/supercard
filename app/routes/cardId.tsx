@@ -19,7 +19,7 @@ export default function CardId() {
   if (loaderData.image) {
     imageUrl = loaderData.image;
   } else {
-    const imageUrl = "/uploads/default.jpg";
+    imageUrl = "/uploads/default.jpg";
   }
 
   const handleDelete = async (cardId: number) => {
@@ -42,7 +42,14 @@ export default function CardId() {
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-6">
-      <div className="bg-white p-6 rounded-lg shadow-lg">
+      <div
+        className="p-6 rounded-lg shadow-lg"
+        style={{
+          background:
+            "linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4))", // 반투명 그라데이션 배경
+          boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)", // 부드러운 그림자
+        }}
+      >
         <h3 className="text-3xl font-bold text-center text-blue-600 mb-4">
           Card Details: {params.cardId}
         </h3>
@@ -59,35 +66,35 @@ export default function CardId() {
         {/* 카드 정보 */}
         <div className="space-y-4">
           <div>
-            <h4 className="text-xl font-semibold text-gray-800">Title</h4>
-            <p className="text-lg text-gray-600">{loaderData.title}</p>
+            <h4 className="text-xl font-semibold text-gray-200">Title</h4>
+            <p className="text-lg text-white">{loaderData.title}</p>
           </div>
 
           <div>
-            <h4 className="text-xl font-semibold text-gray-800">Content</h4>
-            <p className="text-lg text-gray-600">{loaderData.content}</p>
+            <h4 className="text-xl font-semibold text-gray-200">Content</h4>
+            <p className="text-lg text-white">{loaderData.content}</p>
           </div>
 
           <div>
-            <h4 className="text-xl font-semibold text-gray-800">Answer</h4>
-            <p className="text-lg text-gray-600">{loaderData.answer}</p>
+            <h4 className="text-xl font-semibold text-gray-200">Answer</h4>
+            <p className="text-lg text-white">{loaderData.answer}</p>
           </div>
 
           <div>
-            <h4 className="text-xl font-semibold text-gray-800">Tier</h4>
-            <p className="text-lg text-gray-600">{loaderData.tier}</p>
+            <h4 className="text-xl font-semibold text-gray-200">Tier</h4>
+            <p className="text-lg text-white">{loaderData.tier}</p>
           </div>
 
           <div>
-            <h4 className="text-xl font-semibold text-gray-800">SuperCard</h4>
-            <p className="text-lg text-gray-600">
+            <h4 className="text-xl font-semibold text-gray-200">SuperCard</h4>
+            <p className="text-lg text-white">
               {loaderData.superCard || "N/A"}
             </p>
           </div>
 
           <div>
-            <h4 className="text-xl font-semibold text-gray-800">Next Review</h4>
-            <p className="text-lg text-gray-600">
+            <h4 className="text-xl font-semibold text-gray-200">Next Review</h4>
+            <p className="text-lg text-white">
               {loaderData.nextReview || "N/A"}
             </p>
           </div>
@@ -108,7 +115,7 @@ export default function CardId() {
 
         {/* 카드 JSON 정보 출력 (디버깅용) */}
         <div className="mt-6">
-          <h4 className="text-xl font-semibold text-gray-800">
+          <h4 className="text-xl font-semibold text-gray-200">
             Card Data (JSON)
           </h4>
           <pre className="bg-gray-100 p-4 rounded-md text-sm text-gray-600 overflow-x-auto">
