@@ -1,11 +1,16 @@
+/* /app/utils/db.ts */
 import path from "path";
 import sqlite3 from "sqlite3";
 import { open } from "sqlite";
 import type { Card } from "./card-repo";
+import dotenv from "dotenv";
 
-const dbPath = path.join(process.cwd(), "/data", "/cards.db");
+dotenv.config();
 
-// console.log(dbPath);
+export const dbPath = path.join(
+  process.cwd(),
+  process.env.DATABASE_PATH || "./data/app.db"
+);
 
 const openDb = async () => {
   return open({

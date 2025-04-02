@@ -1,0 +1,24 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:../data/app.db"
+}
+
+model cards {
+  id             Int     @id @default(autoincrement())
+  title          String?
+  content        String?
+  answer         String?
+  tier           Int?
+  box            Int?
+  startDate      String?
+  lastReview     String?
+  nextReview     String?
+  reviewCount    Int?
+  reviewInterval Int?
+  superCard      Int?
+  image          String?
+}
