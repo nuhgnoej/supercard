@@ -23,8 +23,9 @@ model cards {
   image          String?
 }
 
-model User {
+model users {
   id       String  @id @default(uuid())
   email    String  @unique
   password String
+  name String
 }

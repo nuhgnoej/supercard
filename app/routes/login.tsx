@@ -12,7 +12,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 
   console.log("Login Attempt:", email, '"', password);
 
-  const user = await prisma.user.findUnique({ where: { email } });
+  const user = await prisma.users.findUnique({ where: { email } });
   if (!user || !(await bcrypt.compare(password, user.password))) {
     console.log("Login Failed");
     return { error: "이메일 또는 비밀번호가 틀렸습니다." };

@@ -8,11 +8,12 @@ export const action = async ({ request }: ActionFunctionArgs) => {
   const formData = await request.formData();
   const email = formData.get("email") as string;
   const password = formData.get("password") as string;
+  const name = formData.get("name") as string;
 
   const hashedPassword = await bcrypt.hash(password, 10);
   try {
-    await prisma.user.create({
-      data: { email, password: hashedPassword },
+    await prisma.users.create({
+      data: { email, password: hashedPassword, name },
     });
     return redirect("/login");
   } catch {
@@ -58,6 +59,18 @@ export default function RegisterPage() {
               name="password"
               className="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
               placeholder="••••••••"
+              required
+            />
+          </div>
+
+          {/* 닉네임 입력 */}
+          <div>
+            <label className="block text-gray-300 mb-1">이메일</label>
+            <input
+              type="text"
+              name="name"
+              className="w-full px-4 py-3 rounded-lg bg-gray-700 text-white border border-gray-600 focus:ring-2 focus:ring-blue-500 focus:outline-none"
+              placeholder="nickname"
               required
             />
           </div>

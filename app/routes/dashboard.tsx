@@ -1,4 +1,3 @@
-
 import type { LoaderFunctionArgs } from "react-router";
 import { redirect, useLoaderData } from "react-router";
 import { prisma } from "~/utils/db.server";
@@ -12,7 +11,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect("/login");
   }
 
-  const user = await prisma.user.findUnique({ where: { id: userId } });
+  const user = await prisma.users.findUnique({ where: { id: userId } });
   if (!user) {
     return redirect("/login");
   }

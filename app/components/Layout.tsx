@@ -1,4 +1,4 @@
-import { Outlet } from "react-router";
+import { Outlet, type LoaderFunctionArgs } from "react-router";
 import Top from "./Top";
 import Footer from "./Footer";
 
