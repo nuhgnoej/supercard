@@ -46,7 +46,8 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const content = formData.get("content") as string;
   const tier = Number(formData.get("tier"));
   const answer = formData.get("answer") as string;
-  const superCard = formData.get("superCard") as string;
+  const superCardRaw = formData.get("superCard") as string;
+  const superCard = superCardRaw ? Number(superCardRaw) : null;
   const file = formData.get("image");
   const user = formData.get("user") as string;
 
@@ -84,7 +85,7 @@ export default function New() {
     content: "",
     tier: 1,
     answer: "",
-    superCard: "",
+    superCard: null,
     image: "",
     user: user.id,
   });
@@ -215,10 +216,10 @@ export default function New() {
               SuperCard
             </label>
             <input
-              type="text"
               name="superCard"
-              value={card.superCard}
+              value={card.superCard ?? ""}
               onChange={handleChange}
+              placeholder="Parent card ID (optional)"
               className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white"
             />
           </div>

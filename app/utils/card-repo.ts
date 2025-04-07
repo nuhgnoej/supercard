@@ -6,7 +6,7 @@ export type Card = {
   title: string;
   content: string;
   tier: number;
-  superCard?: string;
+  superCard?: number | null;
   box: number;
   answer?: string;
   startDate: string;
@@ -24,7 +24,7 @@ export type CardProp = {
   content: string;
   tier: number;
   answer?: string;
-  superCard?: string;
+  superCard?: number | null;
   image?: string;
   user: string;
 };
@@ -73,7 +73,7 @@ export async function getCardsPaginated(
 ) {
   return prisma.cards.findMany({
     where: { user },
-    orderBy: { startDate: "desc" },
+    orderBy: { startDate: "asc" },
     skip: offset,
     take: limit,
   });
@@ -97,7 +97,7 @@ export async function getTodayCardsPaginated(
         lt: tomorrow.toISOString(),
       },
     },
-    orderBy: { startDate: "desc" },
+    orderBy: { startDate: "asc" },
     skip: offset,
     take: limit,
   });
