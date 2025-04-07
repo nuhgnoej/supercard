@@ -1,5 +1,12 @@
 import clsx from "clsx";
-import { CheckCircle, Edit, ThumbsDown, ThumbsUp, Trash } from "lucide-react";
+import {
+  CheckCircle,
+  Edit,
+  Loader2,
+  ThumbsDown,
+  ThumbsUp,
+  Trash,
+} from "lucide-react";
 import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Link } from "react-router";
@@ -143,9 +150,11 @@ export default function CardPage() {
   return (
     <div className="max-w-3xl mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold mb-4">
-          There are totally {cards.length} Cards.
-        </h2>
+        {!isLoading && (
+          <h2 className="text-2xl font-bold mb-4">
+            There are totally {cards.length} Cards.
+          </h2>
+        )}
         <input
           type="text"
           placeholder="Search cards..."
@@ -156,8 +165,8 @@ export default function CardPage() {
       </div>
 
       {isLoading ? (
-        <div className="text-center mt-8 text-gray-500">
-          카드를 불러오는 중입니다...
+        <div className="flex justify-center mt-16 text-gray-500">
+          <Loader2 className="animate-spin w-8 h-8 text-gray-400" />
         </div>
       ) : filteredCards.length === 0 ? (
         <div className="text-center mt-8 text-gray-400">
