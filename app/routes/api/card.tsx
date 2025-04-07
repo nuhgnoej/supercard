@@ -21,8 +21,10 @@ export async function action({ request, params }: Route.ActionArgs) {
     const content = formData.get("content");
     const tier = formData.get("tier");
     const answer = formData.get("answer");
-    const supercard = formData.get("supercard");
+    const superCard = formData.get("superCard");
     const file = formData.get("image");
+
+    console.log("superCard: ", superCard);
 
     const box = formData.get("box");
     const reviewInterval = formData.get("reviewInterval");
@@ -43,7 +45,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       content,
       tier,
       answer,
-      supercard,
+      superCard,
       box,
       reviewInterval,
       nextReview,

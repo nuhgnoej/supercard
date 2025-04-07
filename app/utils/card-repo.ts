@@ -32,7 +32,6 @@ export const makeCard = (card: CardProp) => {
   const startDate = new Date().toISOString().split("T")[0];
   const lastReview = startDate;
   const reviewInterval = 1;
-  // const nextReview = new Date(new Date().getTime()+reviewInterval*24*3600*1000).toISOString().split("T")[0];
   const nextReview = lastReview; // test
   const reviewCount = 0;
   const box = 1;

@@ -6,7 +6,10 @@ import { getCardById } from "~/utils/db";
 
 export async function loader({ params }: Route.LoaderArgs) {
   const id = params.cardId;
+
   const card = await getCardById(Number(id));
+
+  // console.log("card is: ", card);
   return card;
 }
 
@@ -14,6 +17,9 @@ export default function Edit() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const loadedCard = useLoaderData();
+
+  console.log("loadedCard is : ", loadedCard);
+
   const [card, setCard] = useState({
     id: "",
     title: "",
@@ -208,6 +214,7 @@ export default function Edit() {
                   <div>{card.content && `Content: ${card.content}`}</div>
                   <div>{card.tier && `Tier: ${card.tier}`}</div>
                   <div>{card.answer && `Answer: ${card.answer}`}</div>
+                  <div>{card.superCard && `superCard: ${card.superCard}`}</div>
                   <div>{card.image && `Image: attached!`}</div>
                 </div>
               ) : null}
@@ -225,30 +232,6 @@ export default function Edit() {
           </div>
         </div>
       </Form>
-      {/* <div className="flex flex-col">
-        <button
-          onClick={handleOkBtn}
-          className="px-4 py-2 text-white bg-blue-600 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
-        >
-          OK
-        </button>
-
-        <div className="mt-4 mb-4">
-          {isShow ? (
-            <pre className="text-sm">{JSON.stringify(card, null, 2)}</pre>
-          ) : null}
-        </div>
-
-        <button
-          className={clsx(
-            "px-4 py-2 text-white bg-green-600 rounded-md hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-opacity-50",
-            { hidden: !isShow }
-          )}
-          onClick={() => handleSubmit(loadedCard.id)}
-        >
-          Modify
-        </button>
-      </div> */}
     </div>
   );
 }
