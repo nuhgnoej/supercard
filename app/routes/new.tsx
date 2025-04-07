@@ -36,7 +36,18 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect("/login");
   }
 
-  return { id: user.id, name: user.name, email: user.email };
+  const lowerTierCards = await prisma.cards.findMany({
+    where: {
+      user: userId,
+    },
+    select: {
+      id: true,
+      title: true,
+      tier: true,
+    },
+  });
+
+  return { id: user.id, name: user.name, email: user.email, lowerTierCards };
 };
 
 export const action = async ({ request }: Route.ActionArgs) => {
@@ -77,8 +88,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
 export default function New() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
-  const user = useLoaderData<typeof loader>();
-  console.log("loaderData:", user);
+  const { id, name, email, lowerTierCards } = useLoaderData<typeof loader>();
 
   const [card, setCard] = useState({
     title: "",
@@ -87,8 +97,11 @@ export default function New() {
     answer: "",
     superCard: null,
     image: "",
-    user: user.id,
+    user: id,
   });
+
+  const filteredSuperCards =
+    card.tier > 1 ? lowerTierCards.filter((c) => c.tier === card.tier - 1) : [];
 
   const [isShow, setShow] = useState(false);
 
@@ -153,7 +166,7 @@ export default function New() {
         Create New Card
       </h2>
       <Form action="/new" method="post" encType="multipart/form-data">
-        <input type="hidden" name="user" value={user.id} />
+        <input type="hidden" name="user" value={id} />
         <div className="space-y-6">
           <div>
             <label className="block text-sm font-medium text-white">
@@ -184,7 +197,9 @@ export default function New() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white">Tier</label>
+            <label className="block text-sm font-medium text-white">
+              Depth
+            </label>
             <input
               type="number"
               name="tier"
@@ -211,18 +226,26 @@ export default function New() {
             />
           </div>
 
-          <div className={clsx("", { hidden: card.tier === 1 })}>
-            <label className="block text-sm font-medium text-white">
-              SuperCard
-            </label>
-            <input
-              name="superCard"
-              value={card.superCard ?? ""}
-              onChange={handleChange}
-              placeholder="Parent card ID (optional)"
-              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white"
-            />
-          </div>
+          {card.tier > 1 && (
+            <div>
+              <label className="block text-sm font-medium text-white">
+                SuperCard (선택)
+              </label>
+              <select
+                name="superCard"
+                value={card.superCard ?? ""}
+                onChange={handleChange}
+                className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md bg-black text-white"
+              >
+                <option value="">-- Select a Super Card --</option>
+                {filteredSuperCards.map((c) => (
+                  <option key={c.id} value={c.id}>
+                    {c.title}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="flex flex-col">
             <label htmlFor="image" className="font-medium text-white">
