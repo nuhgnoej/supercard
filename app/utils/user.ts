@@ -1,5 +1,4 @@
 // app/utils/user.ts
-
 import type { LoaderFunction } from "react-router";
 import { useLoaderData } from "react-router";
 import { prisma } from "~/utils/db.server";

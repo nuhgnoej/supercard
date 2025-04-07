@@ -88,6 +88,13 @@ export default function Top(user: any) {
             <Calendar className="w-5 h-5 text-white" />
             <span className="text-white text-lg">Today</span>
           </Link>
+          <Link
+            to="/cardPage"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-red-600 transition-all font-extrabold"
+          >
+            <Calendar className="w-5 h-5 text-white" />
+            <span className="text-white text-lg">Card Page</span>
+          </Link>
         </div>
 
         <div className="flex space-x-4 ml-auto">

@@ -1,5 +1,6 @@
 import path from "path";
 import fs from "fs";
+import { prisma } from "./db.server";
 
 export type Card = {
   title: string;
@@ -64,3 +65,16 @@ export const saveImage = async (file: File): Promise<string> => {
 
   return `/uploads/${filename}`;
 };
+
+export async function getCardsPaginated(
+  user: string,
+  limit: number,
+  offset: number
+) {
+  return prisma.cards.findMany({
+    where: { user },
+    orderBy: { startDate: "desc" },
+    skip: offset,
+    take: limit,
+  });
+}

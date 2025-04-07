@@ -21,5 +21,7 @@ export default [
     route("api/card/:cardId", "./routes/api/card.tsx"),
     route("logout", "./routes/logout.tsx"),
     route("settings", "./routes/settings.tsx"),
+    route("cardPage", "./routes/cardPage.tsx"),
+    route("api/cards", "./routes/api/card-page.tsx"),
   ]),
 ] satisfies RouteConfig;
