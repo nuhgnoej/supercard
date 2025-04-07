@@ -9,7 +9,6 @@ export async function loader({ params }: Route.LoaderArgs) {
 
   const card = await getCardById(Number(id));
 
-  // console.log("card is: ", card);
   return card;
 }
 
@@ -17,6 +16,14 @@ export default function Edit() {
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const loadedCard = useLoaderData();
+
+  if (!loadedCard) {
+    return <div>Loading...</div>;
+  }
+
+  if (typeof window !== "undefined" && !loadedCard) {
+    console.warn("loadedCard is undefined on client");
+  }
 
   console.log("loadedCard is : ", loadedCard);
 
@@ -83,8 +90,15 @@ export default function Edit() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto p-6 bg-white rounded-lg shadow-lg min-w-xl min-h-[calc(100vh-300px)]">
-      <h2 className="text-2xl font-semibold text-center mb-6">
+    <div
+      className="max-w-2xl mx-auto p-8 rounded-xl shadow-xl min-w-xl min-h-[calc(100vh-300px)]"
+      style={{
+        background:
+          "linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4))", // 반투명 그라데이션 배경
+        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)", // 부드러운 그림자
+      }}
+    >
+      <h2 className="text-3xl font-semibold text-center text-white mb-6">
         Modify Card: {JSON.stringify(loadedCard.id)}
       </h2>
       <Form
@@ -94,7 +108,7 @@ export default function Edit() {
       >
         <div className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               Title
             </label>
             <input
@@ -103,12 +117,12 @@ export default function Edit() {
               value={card.title}
               required
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white "
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               Content
             </label>
             <textarea
@@ -117,14 +131,12 @@ export default function Edit() {
               value={card.content}
               required
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white "
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Tier
-            </label>
+            <label className="block text-sm font-medium text-white">Tier</label>
             <input
               type="number"
               name="tier"
@@ -133,12 +145,12 @@ export default function Edit() {
               min="1"
               step="1"
               required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white "
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               Answer
             </label>
             <input
@@ -147,12 +159,12 @@ export default function Edit() {
               value={card.answer}
               onChange={handleChange}
               placeholder="(optional...)"
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white"
             />
           </div>
 
           <div className={clsx("", { hidden: card.tier === 1 })}>
-            <label className="block text-sm font-medium text-gray-700">
+            <label className="block text-sm font-medium text-white">
               SuperCard
             </label>
             <input
@@ -160,7 +172,7 @@ export default function Edit() {
               name="superCard"
               value={card.superCard}
               onChange={handleChange}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500"
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white "
             />
           </div>
 

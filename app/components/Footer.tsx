@@ -1,4 +1,4 @@
-import { Github, Twitter, Linkedin } from "lucide-react"; // 아이콘 이름 수정
+import { Github, Twitter, Linkedin, X, XIcon, Instagram } from "lucide-react"; // 아이콘 이름 수정
 
 export default function Footer() {
   return (
@@ -21,29 +21,22 @@ export default function Footer() {
           {/* 소셜 미디어 링크 */}
           <div className="flex space-x-6 mt-4 md:mt-0">
             <a
-              href="https://github.com"
+              href="https://github.com/nuhgnoej/superCard"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-yellow-400 transition"
               aria-label="GitHub"
+              title="https://github.com/nuhgnoej/superCard"
             >
               <Github className="w-6 h-6" />
             </a>
             <a
-              href="https://twitter.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="text-gray-400 hover:text-yellow-400 transition"
-              aria-label="Twitter"
-            >
-              <Twitter className="w-6 h-6" />
-            </a>
-            <a
-              href="https://linkedin.com"
+              href="https://linkedin.com/odineyes"
               target="_blank"
               rel="noopener noreferrer"
               className="text-gray-400 hover:text-yellow-400 transition"
               aria-label="LinkedIn"
+              title="https://linkedin.com/odineyes"
             >
               <Linkedin className="w-6 h-6" />
             </a>
