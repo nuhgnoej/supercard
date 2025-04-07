@@ -47,7 +47,7 @@ export default function Top(user: any) {
 
           <Link
             to="/about"
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-all"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-all font-extrabold"
           >
             <BookOpen className="w-5 h-5 text-white" />
             <span className="text-white text-lg">About</span>
@@ -56,7 +56,7 @@ export default function Top(user: any) {
           {/* Dashboard Button */}
           <Link
             to="/dashboard"
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-all"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-gray-700 transition-all font-extrabold"
           >
             <Grid className="w-5 h-5 text-white" />
             <span className="text-white text-lg">Dashboard</span>
@@ -65,7 +65,7 @@ export default function Top(user: any) {
           {/* New Card Button */}
           <Link
             to="/new"
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-blue-600 transition-all"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-blue-600 transition-all font-extrabold"
           >
             <Plus className="w-5 h-5 text-white" />
             <span className="text-white text-lg">New Card</span>
@@ -74,7 +74,7 @@ export default function Top(user: any) {
           {/* Cards Button */}
           <Link
             to="/cards"
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-green-600 transition-all"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-green-600 transition-all font-extrabold"
           >
             <Book className="w-5 h-5 text-white" />
             <span className="text-white text-lg">Cards</span>
@@ -83,7 +83,7 @@ export default function Top(user: any) {
           {/* Today Button */}
           <Link
             to="/today"
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-red-600 transition-all"
+            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-red-600 transition-all font-extrabold"
           >
             <Calendar className="w-5 h-5 text-white" />
             <span className="text-white text-lg">Today</span>

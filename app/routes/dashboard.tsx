@@ -11,7 +11,13 @@ import { getCardsAll } from "~/utils/db";
 import { prisma } from "~/utils/db.server";
 import { getCardStats } from "~/utils/getCardsStat";
 import { getSession } from "~/utils/session.server";
-import { getReviewCountByDate } from "~/utils/stat";
+import {
+  getAverageReviewInterval,
+  getCardCountByBox,
+  getCumulativeReviewTrend,
+  getReviewCountByDate,
+  getTierDistribution,
+} from "~/utils/stat";
 import {
   LineChart,
   Line,
@@ -20,6 +26,10 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
 } from "recharts";
 import DashboardSwiper from "~/components/DashboardSwiper";
 import type { Route } from "../+types/root";
@@ -48,21 +58,34 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect("/login");
   }
 
-  const cards = await getCardsAll(); // 모든 카드 가져옴
-  const stats = getCardStats(cards ?? []); // 카드 통계 계산
+  const cards = await getCardsAll();
+  const stats = getCardStats(cards ?? []);
   const reviewTrendData = getReviewCountByDate(cards ?? []);
+  const boxData = getCardCountByBox(cards ?? []);
 
   return {
     name: user.name,
     email: user.email,
     stats,
     reviewTrendData,
+    boxData,
+    cumulativeTrend: getCumulativeReviewTrend(cards ?? []),
+    tierDistribution: getTierDistribution(cards ?? []),
+    reviewIntervals: getAverageReviewInterval(cards ?? []),
   };
 };
 
 export default function Dashboard() {
-  const { name, email, stats, reviewTrendData } =
-    useLoaderData<typeof loader>();
+  const {
+    name,
+    email,
+    stats,
+    reviewTrendData,
+    boxData,
+    cumulativeTrend,
+    tierDistribution,
+    reviewIntervals,
+  } = useLoaderData<typeof loader>();
 
   const slides = [
     {
@@ -86,14 +109,75 @@ export default function Dashboard() {
     },
     {
       title: "📦 Box 분포",
-      content: <p className="text-white">👉 여기에 Box BarChart 들어갈 예정</p>,
+      content: (
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart data={boxData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+            <XAxis dataKey="box" stroke="#ccc" />
+            <YAxis stroke="#ccc" />
+            <Tooltip />
+            <Bar dataKey="count" fill="#34d399" />
+          </BarChart>
+        </ResponsiveContainer>
+      ),
     },
     {
       title: "🧠 누적 복습량",
       content: (
-        <p className="text-white">
-          👉 여기에 누적 Review LineChart 들어갈 예정
-        </p>
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={cumulativeTrend}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+            <XAxis dataKey="date" stroke="#ccc" />
+            <YAxis stroke="#ccc" />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="count"
+              stroke="#f472b6"
+              strokeWidth={3}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      ),
+    },
+    {
+      title: "🏅 티어별 카드 수",
+      content: (
+        <ResponsiveContainer width="100%" height={300}>
+          <PieChart>
+            <Pie
+              data={tierDistribution}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius={100}
+              fill="#60a5fa"
+              label={({ name, value }) => `${name}: ${value}`}
+            />
+            <Tooltip />
+          </PieChart>
+        </ResponsiveContainer>
+      ),
+    },
+    {
+      title: "📈 평균 복습 간격 (Top 10)",
+      content: (
+        <ResponsiveContainer width="100%" height={300}>
+          <BarChart layout="vertical" data={reviewIntervals}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+            <XAxis type="number" stroke="#ccc" unit="일" />
+            <YAxis
+              type="category"
+              dataKey="title"
+              stroke="#ccc"
+              width={120}
+              tick={{ fontSize: 12 }}
+            />
+            <Tooltip />
+            <Bar dataKey="interval" fill="#facc15" />
+          </BarChart>
+        </ResponsiveContainer>
       ),
     },
   ];
