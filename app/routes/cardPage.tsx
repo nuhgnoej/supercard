@@ -31,7 +31,9 @@ export default function CardPage() {
 
   const fetchCards = async (pageToFetch: number) => {
     try {
-      const res = await fetch(`/api/cards?page=${pageToFetch}&limit=${PAGE_LIMIT}`);
+      const res = await fetch(
+        `/api/cards?page=${pageToFetch}&limit=${PAGE_LIMIT}`
+      );
       const newCards: CardWithId[] = await res.json();
 
       setCards((prev) => {
@@ -88,7 +90,9 @@ export default function CardPage() {
 
     const today = new Date().toISOString().split("T")[0];
     const updatedReviewCount = card.reviewCount + 1;
-    const updatedBox = success[cardId] ? card.box + 1 : Math.max(1, card.box - 1);
+    const updatedBox = success[cardId]
+      ? card.box + 1
+      : Math.max(1, card.box - 1);
     const updatedInterval = success[cardId]
       ? card.reviewInterval + 1
       : Math.max(1, card.reviewInterval - 1);
@@ -98,7 +102,10 @@ export default function CardPage() {
     const formData = new FormData();
     formData.append("box", String(updatedBox));
     formData.append("reviewInterval", String(updatedInterval));
-    formData.append("nextReview", updatedNextReview.toISOString().split("T")[0]);
+    formData.append(
+      "nextReview",
+      updatedNextReview.toISOString().split("T")[0]
+    );
     formData.append("lastReview", today);
     formData.append("reviewCount", String(updatedReviewCount));
 
@@ -114,7 +121,9 @@ export default function CardPage() {
       if (response.ok) {
         setCards((prev) =>
           prev.map((c) =>
-            c.id === cardId ? { ...card, ...Object.fromEntries(formData.entries()) } : c
+            c.id === cardId
+              ? { ...card, ...Object.fromEntries(formData.entries()) }
+              : c
           )
         );
         console.log(`Card ${cardId} updated successfully!`);
@@ -147,9 +156,13 @@ export default function CardPage() {
       </div>
 
       {isLoading ? (
-        <div className="text-center mt-8 text-gray-500">카드를 불러오는 중입니다...</div>
+        <div className="text-center mt-8 text-gray-500">
+          카드를 불러오는 중입니다...
+        </div>
       ) : filteredCards.length === 0 ? (
-        <div className="text-center mt-8 text-gray-400">표시할 카드가 없습니다.</div>
+        <div className="text-center mt-8 text-gray-400">
+          표시할 카드가 없습니다.
+        </div>
       ) : (
         <InfiniteScroll
           scrollThreshold={1}
@@ -159,7 +172,7 @@ export default function CardPage() {
           loader={<h4 className="text-center mt-4">Loading more cards...</h4>}
         >
           <div className="grid grid-cols-1 gap-4">
-            {filteredCards.map((card) => (
+            {filteredCards.map((card, index) => (
               <div
                 key={card.id}
                 className="p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow"
@@ -181,12 +194,15 @@ export default function CardPage() {
                 }}
               >
                 <Link to={`/card/${card.id}`}>
-                  <h3 className="text-xl font-semibold text-white">{card.title}</h3>
+                  <h3 className="text-xl font-semibold text-white">
+                    {index + 1}. {card.title}
+                  </h3>
                 </Link>
                 <p className="text-white mt-2">{card.content}</p>
 
                 <div className="text-xs mt-4 text-white">
-                  Tier: {card.tier} / Box: {card.box} / Count: {card.reviewCount}
+                  Tier: {card.tier} / Box: {card.box} / Count:{" "}
+                  {card.reviewCount}
                 </div>
                 <div className="text-xs mt-2 text-white">
                   Last: {card.lastReview} / Next: {card.nextReview}
@@ -211,8 +227,10 @@ export default function CardPage() {
                   <button
                     onClick={() => toggleSuccessFailure(card.id)}
                     className={clsx("text-white p-2 rounded-md", {
-                      "bg-yellow-500 hover:bg-yellow-600 transition": success[card.id],
-                      "bg-gray-500 hover:bg-gray-600 transition": !success[card.id],
+                      "bg-yellow-500 hover:bg-yellow-600 transition":
+                        success[card.id],
+                      "bg-gray-500 hover:bg-gray-600 transition":
+                        !success[card.id],
                     })}
                     title="Toggle Success/Failure"
                   >

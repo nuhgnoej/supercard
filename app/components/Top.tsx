@@ -89,7 +89,7 @@ export default function Top(user: any) {
                   className="flex items-center space-x-1 px-3 py-1 rounded hover:bg-green-700 transition-all"
                 >
                   <Grid className="w-3 h-3 text-white" />
-                  <span className="text-white text-xs">All Cards</span>
+                  <span className="text-white text-xs">All Cards(Grid)</span>
                 </Link>
                 <Link
                   to="/today"

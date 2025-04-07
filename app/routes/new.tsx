@@ -235,12 +235,12 @@ export default function New() {
                 name="superCard"
                 value={card.superCard ?? ""}
                 onChange={handleChange}
-                className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md bg-black text-white"
+                className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md text-gray-400"
               >
                 <option value="">-- Select a Super Card --</option>
                 {filteredSuperCards.map((c) => (
                   <option key={c.id} value={c.id}>
-                    {c.title}
+                    {c.id}. {c.title}
                   </option>
                 ))}
               </select>

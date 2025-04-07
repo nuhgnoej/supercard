@@ -172,7 +172,7 @@ export default function CardPage() {
           loader={<h4 className="text-center mt-4">Loading more cards...</h4>}
         >
           <div className="grid grid-cols-1 gap-4">
-            {filteredCards.map((card) => (
+            {filteredCards.map((card, index) => (
               <div
                 key={card.id}
                 className="p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow"
@@ -195,7 +195,7 @@ export default function CardPage() {
               >
                 <Link to={`/card/${card.id}`}>
                   <h3 className="text-xl font-semibold text-white">
-                    {card.title}
+                    {index + 1}. {card.title}
                   </h3>
                 </Link>
                 <p className="text-white mt-2">{card.content}</p>
