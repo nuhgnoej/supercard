@@ -33,6 +33,8 @@ import {
 } from "recharts";
 import DashboardSwiper from "~/components/DashboardSwiper";
 import type { Route } from "../+types/root";
+import NewCardFloatingButton from "~/components/NewCardFloatingButton";
+import { Link } from "react-router";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -190,9 +192,15 @@ export default function Dashboard() {
       >
         <header className="mb-6 border-b pb-4">
           <h1 className="text-2xl text-white font-bold">📊 Dashboard</h1>
-          <p className="text-white">
-            환영합니다, {name} ({email})님!
-          </p>
+          <Link
+            to="/settings"
+            className="hover:underline text-white  transition-all"
+            title="user profile"
+          >
+            <p className="text-white">
+              환영합니다, {name} ({email})님!
+            </p>
+          </Link>
         </header>
 
         <main className="space-y-10">
@@ -261,6 +269,7 @@ export default function Dashboard() {
           </section>
         </main>
       </div>
+      <NewCardFloatingButton />
     </div>
   );
 }

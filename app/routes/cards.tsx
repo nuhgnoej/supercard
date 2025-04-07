@@ -10,6 +10,7 @@ import type { LoaderFunctionArgs } from "react-router";
 import { redirect } from "react-router";
 import { getSession, getUser } from "~/utils/session.server";
 import type { Route } from "../+types/root";
+import NewCardFloatingButton from "~/components/NewCardFloatingButton";
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -240,6 +241,7 @@ export default function Page() {
           ))}
         </div>
       )}
+      <NewCardFloatingButton />
     </div>
   );
 }

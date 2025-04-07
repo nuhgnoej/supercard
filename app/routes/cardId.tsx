@@ -1,8 +1,19 @@
 //routes/cardId.tsx
-import { Link, redirect, useLoaderData, useParams } from "react-router";
+import { Link, useLoaderData, useParams } from "react-router";
 import { getCardById } from "~/utils/db";
 import type { Route } from "../+types/root";
 import { Edit, Trash } from "lucide-react";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "카드 정보 | SuperCard" },
+    {
+      name: "description",
+      content:
+        "이 페이지에서 카드의 제목, 내용, 복습 정보 등을 확인할 수 있습니다.",
+    },
+  ];
+}
 
 // loader 함수
 export async function loader({ params }: Route.LoaderArgs) {

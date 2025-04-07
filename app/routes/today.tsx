@@ -4,6 +4,18 @@ import { useEffect, useState } from "react";
 import InfiniteScroll from "react-infinite-scroll-component";
 import { Link } from "react-router";
 import type { Card } from "~/utils/card-repo";
+import type { Route } from "../+types/root";
+import NewCardFloatingButton from "~/components/NewCardFloatingButton";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Today Cards | SuperCard" },
+    {
+      name: "description",
+      content: "오늘 복습해야 할 카드들을 한눈에 확인하고 학습을 진행하세요.",
+    },
+  ];
+}
 
 type CardWithId = Card & { id: number };
 
@@ -212,6 +224,7 @@ export default function CardPage() {
           ))}
         </div>
       </InfiniteScroll>
+      <NewCardFloatingButton />
     </div>
   );
 }

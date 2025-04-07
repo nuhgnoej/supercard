@@ -4,6 +4,16 @@ import { Form, useLoaderData } from "react-router";
 import type { Route } from "../+types/root";
 import { getCardById } from "~/utils/db";
 
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "카드 수정 | SuperCard" },
+    {
+      name: "description",
+      content: "선택한 학습 카드를 수정하고 필요한 정보를 업데이트하세요.",
+    },
+  ];
+}
+
 export async function loader({ params }: Route.LoaderArgs) {
   const id = params.cardId;
 
