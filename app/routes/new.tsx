@@ -12,6 +12,17 @@ import { setCard } from "~/utils/db";
 import { getSession } from "~/utils/session.server";
 import { prisma } from "~/utils/db.server";
 
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "New Card+ | SuperCard" },
+    {
+      name: "description",
+      content:
+        "학습할 내용을 카드로 만들어보세요. 쉽게 등록하고 효율적으로 복습할 수 있습니다.",
+    },
+  ];
+}
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await getSession(request);
   const userId = session.get("userId");

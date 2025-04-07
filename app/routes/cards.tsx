@@ -9,6 +9,17 @@ import clsx from "clsx";
 import type { LoaderFunctionArgs } from "react-router";
 import { redirect } from "react-router";
 import { getSession, getUser } from "~/utils/session.server";
+import type { Route } from "../+types/root";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Cards | SuperCard" },
+    {
+      name: "description",
+      content: "지금까지 만든 모든 학습 카드를 확인하고 관리하세요.",
+    },
+  ];
+}
 
 // loader 함수에서 카드 데이터를 불러옴
 export const loader = async ({ request }: LoaderFunctionArgs) => {

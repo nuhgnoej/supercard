@@ -1,4 +1,4 @@
-import { Link, useLoaderData, useNavigate } from "react-router";
+import { Link } from "react-router";
 import {
   Home,
   Grid,
@@ -11,7 +11,7 @@ import {
 } from "lucide-react"; // Lucide Icons 사용
 import clsx from "clsx";
 
-import { useRef, useState, useTransition } from "react"; // ✅ useTransition 추가
+import { useState } from "react"; // ✅ useTransition 추가
 import { Loader2 } from "lucide-react"; // ✅ Lucide 아이콘에서 로딩 스피너 추가
 
 export default function Top(user: any) {
@@ -119,11 +119,16 @@ export default function Top(user: any) {
         {/* 로그아웃 버튼 */}
         <div
           className={clsx(
-            "flex items-center space-x-2 px-4 py-2 rounded-lg transition-all",
+            "flex items-center space-x-2 px-4 py-2 rounded-lg transition-all text-white font-semibold font-pretendard tracking-tight",
             { hidden: user.user === null }
           )}
         >
-          <div>환영합니다. {user.user?.name}님!</div>
+          <Link
+            to="/settings"
+            className="hover:underline text-white font-semibold transition-all"
+          >
+            <div>환영합니다! {user.user?.name}님! 👋</div>
+          </Link>
         </div>
 
         <div

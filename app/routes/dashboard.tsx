@@ -1,7 +1,39 @@
+import {
+  AlarmClock,
+  Archive,
+  BarChart2,
+  CalendarCheck,
+  Layers,
+} from "lucide-react";
 import type { LoaderFunctionArgs } from "react-router";
 import { redirect, useLoaderData } from "react-router";
+import { getCardsAll } from "~/utils/db";
 import { prisma } from "~/utils/db.server";
+import { getCardStats } from "~/utils/getCardsStat";
 import { getSession } from "~/utils/session.server";
+import { getReviewCountByDate } from "~/utils/stat";
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import DashboardSwiper from "~/components/DashboardSwiper";
+import type { Route } from "../+types/root";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Dashboard | SuperCard" },
+    {
+      name: "description",
+      content:
+        "총 카드 수, 복습 일정, 학습 추이 등 나의 학습 현황을 한눈에 확인하세요.",
+    },
+  ];
+}
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await getSession(request);
@@ -16,21 +48,157 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     return redirect("/login");
   }
 
-  return { name: user.name, email: user.email };
+  const cards = await getCardsAll(); // 모든 카드 가져옴
+  const stats = getCardStats(cards ?? []); // 카드 통계 계산
+  const reviewTrendData = getReviewCountByDate(cards ?? []);
+
+  return {
+    name: user.name,
+    email: user.email,
+    stats,
+    reviewTrendData,
+  };
 };
 
 export default function Dashboard() {
-  const { name, email } = useLoaderData<typeof loader>();
+  const { name, email, stats, reviewTrendData } =
+    useLoaderData<typeof loader>();
+
+  const slides = [
+    {
+      title: "📅 일별 복습 추이",
+      content: (
+        <ResponsiveContainer width="100%" height={300}>
+          <LineChart data={reviewTrendData}>
+            <CartesianGrid strokeDasharray="3 3" stroke="#444" />
+            <XAxis dataKey="date" stroke="#ccc" />
+            <YAxis stroke="#ccc" />
+            <Tooltip />
+            <Line
+              type="monotone"
+              dataKey="count"
+              stroke="#60a5fa"
+              strokeWidth={3}
+            />
+          </LineChart>
+        </ResponsiveContainer>
+      ),
+    },
+    {
+      title: "📦 Box 분포",
+      content: <p className="text-white">👉 여기에 Box BarChart 들어갈 예정</p>,
+    },
+    {
+      title: "🧠 누적 복습량",
+      content: (
+        <p className="text-white">
+          👉 여기에 누적 Review LineChart 들어갈 예정
+        </p>
+      ),
+    },
+  ];
 
   return (
-    <div>
-      <h1>대시보드</h1>
-      <p>
-        환영합니다, {name} ({email})님!
-      </p>
-      <form method="post" action="/logout">
-        <button type="submit">로그아웃</button>
-      </form>
+    <div className="min-h-screen p-8 transparent">
+      <div
+        className="max-w-4xl mx-auto rounded-2xl shadow p-6"
+        style={{ backgroundColor: "rgba(0, 0, 0, 0.6)" }}
+      >
+        <header className="mb-6 border-b pb-4">
+          <h1 className="text-2xl text-white font-bold">📊 Dashboard</h1>
+          <p className="text-white">
+            환영합니다, {name} ({email})님!
+          </p>
+        </header>
+
+        <main className="space-y-10">
+          {/* 카드 통계 위젯들 */}
+          <section>
+            <h2 className="text-white text-lg font-semibold mb-4">
+              📈 학습 통계
+            </h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+              <DashboardCard
+                title="총 카드 수"
+                value={`${stats.total}개`}
+                icon={<Layers size={28} />}
+              />
+              <DashboardCard
+                title="오늘 복습할 카드"
+                value={`${stats.todayReviews}개`}
+                icon={<AlarmClock size={28} />}
+              />
+              <DashboardCard
+                title="평균 복습 횟수"
+                value={`${stats.averageReviewCount.toFixed(1)}회`}
+                icon={<BarChart2 size={28} />}
+              />
+              <DashboardCard
+                title="다음 복습 예정"
+                value={
+                  stats.nextReview ? stats.nextReview.toLocaleDateString() : "-"
+                }
+                icon={<CalendarCheck size={28} />}
+              />
+              <DashboardCard
+                title="마지막 복습일"
+                value={
+                  stats.lastReviewed
+                    ? stats.lastReviewed.toLocaleDateString()
+                    : "-"
+                }
+                icon={<Archive size={28} />}
+              />
+            </div>
+          </section>
+
+          {/* 박스 분포 */}
+          <section>
+            <h2 className="text-white text-lg font-semibold mb-4">
+              📦 박스 분포
+            </h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4">
+              {Object.entries(stats.boxStats).map(([box, count]) => (
+                <DashboardCard
+                  key={box}
+                  title={`Box ${box}`}
+                  value={`${count}개`}
+                />
+              ))}
+            </div>
+          </section>
+
+          {/* 🔥 일별 복습 수 그래프 */}
+          <section>
+            <h2 className="text-white text-lg font-semibold mb-4">
+              📅 최근 복습 추이
+            </h2>
+            <DashboardSwiper slides={slides} />
+          </section>
+        </main>
+      </div>
+    </div>
+  );
+}
+
+function DashboardCard({
+  title,
+  value,
+  icon,
+}: {
+  title: string;
+  value: string;
+  icon?: React.ReactNode;
+}) {
+  return (
+    <div className="bg-white/10 backdrop-blur-lg p-6 rounded-2xl shadow-md border border-white/20 hover:scale-[1.02] transition-transform duration-200">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-sm text-gray-300">{title}</h2>
+          <p className="text-2xl font-bold text-white mt-1">{value}</p>
+        </div>
+        {icon && <div className="text-white/50">{icon}</div>}
+      </div>
     </div>
   );
 }

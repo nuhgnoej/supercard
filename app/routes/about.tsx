@@ -1,5 +1,16 @@
 import { Database, PaintBucket, Server, Terminal } from "lucide-react";
-import { useState } from "react";
+import type { Route } from "../+types/root";
+
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "About | SuperCard" },
+    {
+      name: "description",
+      content:
+        "Your Journey는 목표 달성을 위한 학습 관리 플랫폼입니다. 우리의 철학과 개발 배경을 알아보세요.",
+    },
+  ];
+}
 
 export default function AboutPage() {
   return (
