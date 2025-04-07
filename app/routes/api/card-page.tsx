@@ -2,7 +2,7 @@
 import { getSession } from "~/utils/session.server";
 
 import type { LoaderFunctionArgs } from "react-router";
-import { getCardsPaginated } from "~/utils/card-repo";
+import { getCardsPaginated, getTodayCardsPaginated } from "~/utils/card-repo";
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   const session = await getSession(request);
@@ -17,6 +17,13 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   const limit = parseInt(url.searchParams.get("limit") || "20", 10);
   const offset = (page - 1) * limit;
 
-  const cards = await getCardsPaginated(userId, limit, offset);
+  const today = url.searchParams.get("today") === "true";
+
+  let cards;
+  if (today === true) {
+    cards = await getTodayCardsPaginated(userId, limit, offset);
+  } else {
+    cards = await getCardsPaginated(userId, limit, offset);
+  }
   return cards;
 };

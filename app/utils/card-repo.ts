@@ -78,3 +78,27 @@ export async function getCardsPaginated(
     take: limit,
   });
 }
+
+export async function getTodayCardsPaginated(
+  user: string,
+  limit: number,
+  offset: number
+) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0); // 오늘 자정 기준
+
+  const tomorrow = new Date(today);
+  tomorrow.setDate(today.getDate() + 1);
+
+  return prisma.cards.findMany({
+    where: {
+      user,
+      nextReview: {
+        lt: tomorrow.toISOString(),
+      },
+    },
+    orderBy: { startDate: "desc" },
+    skip: offset,
+    take: limit,
+  });
+}

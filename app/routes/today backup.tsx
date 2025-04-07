@@ -1,17 +1,42 @@
-import clsx from "clsx";
-import { CheckCircle, Edit, ThumbsDown, ThumbsUp, Trash } from "lucide-react";
-import { useEffect, useState } from "react";
-import InfiniteScroll from "react-infinite-scroll-component";
-import { Link } from "react-router";
+//app/routes/cards.tsx
+import { useState } from "react";
+import { useLoaderData } from "react-router";
+import { getCardToday } from "~/utils/db";
+import { Trash, CheckCircle, ThumbsUp, ThumbsDown, Edit } from "lucide-react";
 import type { Card } from "~/utils/card-repo";
+import { Link } from "react-router";
+import clsx from "clsx";
+import type { LoaderFunctionArgs } from "react-router";
+import { redirect } from "react-router";
+import { getSession } from "~/utils/session.server";
+import type { Route } from "../+types/root";
 
-type CardWithId = Card & { id: number };
+export function meta({}: Route.MetaArgs) {
+  return [
+    { title: "Today Cards | SuperCard" },
+    {
+      name: "description",
+      content: "오늘 복습해야 할 카드들을 한눈에 확인하고 학습을 진행하세요.",
+    },
+  ];
+}
 
-export default function CardPage() {
-  const [cards, setCards] = useState<CardWithId[]>([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  const [query, setQuery] = useState("");
+// loader 함수에서 카드 데이터를 불러옴
+export const loader = async ({ request }: LoaderFunctionArgs) => {
+  const session = await getSession(request);
+  const userId = session.get("userId");
+
+  if (!userId) {
+    return redirect("/login");
+  }
+
+  const cards = await getCardToday();
+  return cards;
+};
+
+export default function Page() {
+  const cards = useLoaderData(); // loader에서 반환된 데이터를 사용
+  const [cardList, setCardList] = useState(cards); // 카드 목록 상태 관리
   const [success, setSuccess] = useState<{ [key: number]: boolean }>({});
 
   // 삭제 버튼 클릭 시 호출되는 함수
@@ -35,13 +60,14 @@ export default function CardPage() {
 
   // 성공/실패 토글 버튼 클릭 시 호출되는 함수
   const toggleSuccessFailure = (cardId: number) => {
+    // console.log('hello This is future ToggleBtn')
     setSuccess((pre) => ({ ...pre, [cardId]: !pre[cardId] }));
     console.log(success);
   };
 
   // 완료 버튼 클릭 시 호출되는 함수
   const handleComplete = async (cardId: number) => {
-    const card = cards.find((c) => c.id === cardId);
+    const card = cardList.find((c: Card & { id: number }) => c.id === cardId);
     if (!card) return;
     const today = new Date().toISOString().split("T")[0];
 
@@ -55,6 +81,7 @@ export default function CardPage() {
     const updatedNextReview = new Date();
     updatedNextReview.setDate(updatedNextReview.getDate() + updatedInterval);
 
+    // ✅ FormData 객체 생성
     const formData = new FormData();
     formData.append("box", String(updatedBox));
     formData.append("reviewInterval", String(updatedInterval));
@@ -80,7 +107,8 @@ export default function CardPage() {
       if (response.ok) {
         console.log(`🎉 Card ${cardId} updated successfully!`);
 
-        setCards((prevList: typeof cards) =>
+        // ✅ UI 업데이트
+        setCardList((prevList: typeof cardList) =>
           prevList.map((c: Card & { id: number }) =>
             c.id === cardId
               ? { ...card, ...Object.fromEntries(formData.entries()) }
@@ -96,43 +124,18 @@ export default function CardPage() {
     }
   };
 
-  const fetchCards = async () => {
-    const res = await fetch(`/api/cards?page=${page}&limit=3&today=true`);
-    const newCards = await res.json();
-    setCards((prev) => [...prev, ...newCards]);
-
-    if (newCards.length < 3) setHasMore(false);
-  };
-
-  useEffect(() => {
-    fetchCards();
-  }, [page]);
-
-  const filteredCards = cards.filter((card) =>
-    card.title.toLowerCase().includes(query.toLowerCase())
-  );
-
   return (
-    <div className="max-w-3xl mx-auto p-4">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-bold">📚 Card Explorer</h2>
-        <input
-          type="text"
-          placeholder="Search cards..."
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          className="p-2 border border-gray-300 rounded-md"
-        />
-      </div>
-
-      <InfiniteScroll
-        dataLength={filteredCards.length}
-        next={() => setPage((prev) => prev + 1)}
-        hasMore={hasMore}
-        loader={<h4 className="text-center mt-4">Loading more cards...</h4>}
-      >
-        <div className="grid grid-cols-1 gap-4">
-          {filteredCards.map((card) => (
+    <div className="max-w-7xl mx-auto px-4">
+      <h2 className="text-2xl font-bold mb-4">
+        There are totally {cardList.length} Cards.
+      </h2>
+      {cardList.length === 0 ? (
+        <p className="text-gray-600">
+          No cards available at the moment. Please add some cards!
+        </p>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {cardList.map((card: Card & { id: number }) => (
             <div
               key={card.id}
               className="p-4 rounded-lg shadow-lg hover:shadow-2xl transition-shadow"
@@ -159,13 +162,33 @@ export default function CardPage() {
                 </h3>
               </Link>
               <p className="text-white mt-2">{card.content}</p>
+              <p className={clsx("text-white mt-2", { hidden: true })}>
+                {card.answer}
+              </p>
 
-              <div className="text-xs mt-4 text-white">
-                Tier: {card.tier} / Box: {card.box} / Count: {card.reviewCount}
+              {/* 날짜 정보 영역 */}
+              <div className="mt-4">
+                <div className="mt-2 text-sm text-white">
+                  <p>Last Review: {card.lastReview}</p>
+                </div>
+                <div className="mt-2 text-sm text-white">
+                  <p>Next Review: {card.nextReview}</p>
+                </div>
               </div>
-              <div className="text-xs mt-2 text-white">
-                Last: {card.lastReview} / Next: {card.nextReview}
+
+              {/* 부가정보 영역 */}
+              <div className="mt-4 flex">
+                <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2">
+                  Tier: {card.tier}
+                </span>
+                <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2">
+                  Box: {card.box}
+                </span>
+                <span className="inline-block bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm mr-2">
+                  Count: {card.reviewCount}
+                </span>
               </div>
+
               {/* 버튼 영역 */}
               <div className="mt-4 flex justify-end space-x-4">
                 {/* 수정 버튼 */}
@@ -211,7 +234,7 @@ export default function CardPage() {
             </div>
           ))}
         </div>
-      </InfiniteScroll>
+      )}
     </div>
   );
 }
