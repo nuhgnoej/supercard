@@ -195,10 +195,18 @@ export default function CardPage() {
     }
   };
 
-  const filteredCards = cards.filter((card) =>
-    card.title.toLowerCase().includes(query.toLowerCase())
-  );
-  console.log(cards);
+  const [selectedType, setSelectedType] = useState<string>("all");
+
+  const filteredCards = cards.filter((card) => {
+    const matchQuery = card.title.toLowerCase().includes(query.toLowerCase());
+    const matchType =
+      selectedType === "all"
+        ? true
+        : (card.type?.toLowerCase() || "unknown") === selectedType;
+
+    return matchQuery && matchType;
+  });
+
   return (
     <div className="max-w-3xl mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
@@ -214,6 +222,22 @@ export default function CardPage() {
           onChange={(e) => setQuery(e.target.value)}
           className="p-2 border border-gray-300 rounded-md"
         />
+      </div>
+      <div className="flex gap-2 flex-wrap mb-4">
+        {["all", "task", "quiz", "memo", "tip", "unknown"].map((type) => (
+          <button
+            key={type}
+            onClick={() => setSelectedType(type)}
+            className={clsx(
+              "px-3 py-1 rounded-full border text-sm capitalize transition",
+              selectedType === type
+                ? "bg-black text-white border-black"
+                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-100"
+            )}
+          >
+            {type}
+          </button>
+        ))}
       </div>
 
       {isLoading ? (
