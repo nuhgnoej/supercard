@@ -79,7 +79,7 @@ export async function getCardsPaginated(
     skip: offset,
     take: limit,
   });
-  console.log("점검용 콘솔메세지(card-repo.ts):", data);
+
   return prisma.cards.findMany({
     where: { user },
     orderBy: { startDate: "asc" },

@@ -212,7 +212,7 @@ export default function CardPage() {
       <div className="flex justify-between items-center mb-4">
         {!isLoading && (
           <h2 className="text-2xl font-bold mb-4">
-            There are totally {cards.length} Cards.
+            Showing {filteredCards.length} of {cards.length} Cards
           </h2>
         )}
         <input
