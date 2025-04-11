@@ -43,13 +43,14 @@ export const setCard = async (card: Card) => {
             reviewInterval INTEGER,
             superCard INTEGER,
             image TEXT,
-            user TEXT
+            user TEXT,
+            type TEXT
      )`
   );
 
   await db.run(
-    `INSERT INTO cards (title, content, answer, tier, box, startDate, lastReview, nextReview, reviewCount, reviewInterval, image, user, superCard) 
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?,?,?)`,
+    `INSERT INTO cards (title, content, answer, tier, box, startDate, lastReview, nextReview, reviewCount, reviewInterval, image, user, superCard,type) 
+    VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?)`,
     [
       card.title,
       card.content,
@@ -64,6 +65,7 @@ export const setCard = async (card: Card) => {
       card.image,
       card.user,
       card.superCard,
+      card.type,
     ]
   );
 
@@ -155,8 +157,9 @@ export const updateCard = async (cardId: number, data: any) => {
     superCard: data.superCard ?? existingCard.superCard,
     answer: data.answer ?? existingCard.answer,
     image: data.image ?? existingCard.image,
+    type: data.type ?? existingCard.type,
   };
-
+  console.log("점검용 콘솔메세지(db.ts):", updatedData);
   const query = `
     UPDATE cards
     SET
@@ -170,7 +173,8 @@ export const updateCard = async (cardId: number, data: any) => {
       tier = ?,
       superCard = ?,
       answer = ?,
-      image = ?        
+      image = ?,
+      type =?        
     WHERE id = ?
   `;
 
@@ -186,6 +190,7 @@ export const updateCard = async (cardId: number, data: any) => {
     updatedData.superCard,
     updatedData.answer,
     updatedData.image,
+    updatedData.type,
     cardId,
   ]);
 

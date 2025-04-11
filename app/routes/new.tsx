@@ -61,8 +61,9 @@ export const action = async ({ request }: Route.ActionArgs) => {
   const superCard = superCardRaw ? Number(superCardRaw) : null;
   const file = formData.get("image");
   const user = formData.get("user") as string;
+  const type = formData.get("type") as string;
 
-  console.log("action user:", user);
+  // console.log("action user:", user);
 
   let imageUrl = null;
 
@@ -78,6 +79,7 @@ export const action = async ({ request }: Route.ActionArgs) => {
     superCard,
     image: imageUrl ?? undefined,
     user: user,
+    type,
   });
 
   await setCard(card);
@@ -98,6 +100,7 @@ export default function New() {
     superCard: null,
     image: "",
     user: id,
+    type: "",
   });
 
   const filteredSuperCards =
@@ -158,14 +161,30 @@ export default function New() {
       className="max-w-2xl mx-auto p-8 rounded-xl shadow-xl min-w-xl min-h-[calc(100vh-300px)]"
       style={{
         background:
-          "linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4))", // 반투명 그라데이션 배경
-        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)", // 부드러운 그림자
+          "linear-gradient(135deg, rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.4))",
+        boxShadow: "0 4px 20px rgba(0, 0, 0, 0.3)",
       }}
     >
       <h2 className="text-3xl font-semibold text-center text-white mb-6">
         Create New Card
       </h2>
       <Form action="/new" method="post" encType="multipart/form-data">
+        <div>
+          <label className="block text-sm font-medium text-white">Type</label>
+          <select
+            name="type"
+            value={card.type ?? ""}
+            onChange={handleChange}
+            className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md text-gray-400"
+          >
+            <option value="">-- Select Card Type--</option>
+              <option value="Task">Task</option>
+              <option value="Quiz">Quiz</option>
+              <option value="Memo">Memo</option>
+              <option value="Tip">Tip</option>
+              <option value="Unknown">Unknown</option>
+          </select>
+        </div>
         <input type="hidden" name="user" value={id} />
         <div className="space-y-6">
           <div>
@@ -296,11 +315,17 @@ export default function New() {
             >
               {isShow && (
                 <div>
-                  <div>{card.title && `Title: ${card.title}`}</div>
-                  <div>{card.content && `Content: ${card.content}`}</div>
-                  <div>{card.tier && `Tier: ${card.tier}`}</div>
-                  <div>{card.answer && `Answer: ${card.answer}`}</div>
-                  <div>{card.image && `Image: Attached!`}</div>
+                  {
+                    <pre>
+                      <h3>카드 생성 정보</h3>
+                      <div> -Type:{card.type && `${card.type}`}</div>
+                      <div> -Title:{card.title && `${card.title}`}</div>
+                      <div> -Content:{card.content && `${card.content}`}</div>
+                      <div> -Tier:{card.tier && `${card.tier}`}</div>
+                      <div> -Answer:{card.answer && `${card.answer}`}</div>
+                      <div> -Image:{card.image && `Attached!`}</div>
+                    </pre>
+                  }
                 </div>
               )}
             </div>

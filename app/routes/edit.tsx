@@ -43,8 +43,9 @@ export default function Edit() {
     content: "",
     tier: 1,
     answer: "",
-    superCard: "",
+    superCard: null,
     image: null,
+    type: "",
   });
 
   useEffect(() => setCard(loadedCard), []);
@@ -77,7 +78,7 @@ export default function Edit() {
     } else {
       setCard((prevCard) => ({
         ...prevCard,
-        [name]: value,
+        [name]: value === "" ? null : value,
       }));
     }
     console.log(name, ":", value);
@@ -117,6 +118,22 @@ export default function Edit() {
         encType="multipart/form-data"
       >
         <div className="space-y-4">
+          <div>
+            <label className="block text-sm font-medium text-white">Type</label>
+            <select
+              name="type"
+              value={card.type ?? ""}
+              onChange={handleChange}
+              className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md text-gray-400"
+            >
+              <option value="">-- Select Card Type--</option>
+              <option value="Task">Task</option>
+              <option value="Quiz">Quiz</option>
+              <option value="Memo">Memo</option>
+              <option value="Tip">Tip</option>
+              <option value="Unknown">Unknown</option>
+            </select>
+          </div>
           <div>
             <label className="block text-sm font-medium text-white">
               Title
@@ -180,7 +197,7 @@ export default function Edit() {
             <input
               type="text"
               name="superCard"
-              value={card.superCard}
+              value={card.superCard ?? ""}
               onChange={handleChange}
               className="mt-2 block w-full px-4 py-3 border border-gray-300 rounded-md focus:ring-indigo-500 focus:border-indigo-500 transition duration-300 ease-in-out text-white "
             />
@@ -230,16 +247,21 @@ export default function Edit() {
                 hidden: !isShow,
               })}
             >
-              {isShow ? (
+              {isShow && (
                 <div>
-                  <div>{card.title && `Title: ${card.title}`}</div>
-                  <div>{card.content && `Content: ${card.content}`}</div>
-                  <div>{card.tier && `Tier: ${card.tier}`}</div>
-                  <div>{card.answer && `Answer: ${card.answer}`}</div>
-                  <div>{card.superCard && `superCard: ${card.superCard}`}</div>
-                  <div>{card.image && `Image: attached!`}</div>
+                  {
+                    <pre>
+                      <h3>카드 생성 정보</h3>
+                      <div> -Type:{card.type && `${card.type}`}</div>
+                      <div> -Title:{card.title && `${card.title}`}</div>
+                      <div> -Content:{card.content && `${card.content}`}</div>
+                      <div> -Tier:{card.tier && `${card.tier}`}</div>
+                      <div> -Answer:{card.answer && `${card.answer}`}</div>
+                      <div> -Image:{card.image && `Attached!`}</div>
+                    </pre>
+                  }
                 </div>
-              ) : null}
+              )}
             </div>
 
             <button

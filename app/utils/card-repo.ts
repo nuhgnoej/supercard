@@ -17,6 +17,7 @@ export type Card = {
   class?: string;
   image?: string;
   user: string;
+  type?: string;
 };
 
 export type CardProp = {
@@ -27,6 +28,7 @@ export type CardProp = {
   superCard?: number | null;
   image?: string;
   user: string;
+  type: string;
 };
 
 export const makeCard = (card: CardProp) => {
@@ -71,6 +73,13 @@ export async function getCardsPaginated(
   limit: number,
   offset: number
 ) {
+  const data = await prisma.cards.findMany({
+    where: { user },
+    orderBy: { startDate: "asc" },
+    skip: offset,
+    take: limit,
+  });
+  console.log("점검용 콘솔메세지(card-repo.ts):", data);
   return prisma.cards.findMany({
     where: { user },
     orderBy: { startDate: "asc" },

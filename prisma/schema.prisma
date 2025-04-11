@@ -22,6 +22,7 @@ model cards {
   superCard      Int?
   image          String?
   user           String?
+  type String?
 }
 
 model users {

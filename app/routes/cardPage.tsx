@@ -1,5 +1,4 @@
 // app/routes/cardPage.tsx
-
 import clsx from "clsx";
 import {
   CheckCircle,
@@ -15,6 +14,57 @@ import { Link } from "react-router";
 import type { Card } from "~/utils/card-repo";
 import type { Route } from "../+types/root";
 import NewCardFloatingButton from "~/components/NewCardFloatingButton";
+
+import {
+  CheckSquare,
+  HelpCircle,
+  StickyNote,
+  Info,
+  FileText,
+} from "lucide-react";
+
+const getTypeBadge = (type?: string) => {
+  const baseStyle =
+    "inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold";
+
+  switch (type?.toLowerCase()) {
+    case "task":
+      return (
+        <span className={`${baseStyle} bg-purple-100 text-purple-800`}>
+          <CheckSquare className="w-4 h-4" />
+          Task
+        </span>
+      );
+    case "quiz":
+      return (
+        <span className={`${baseStyle} bg-blue-100 text-blue-800`}>
+          <HelpCircle className="w-4 h-4" />
+          Quiz
+        </span>
+      );
+    case "memo":
+      return (
+        <span className={`${baseStyle} bg-yellow-100 text-yellow-800`}>
+          <StickyNote className="w-4 h-4" />
+          Memo
+        </span>
+      );
+    case "tip":
+      return (
+        <span className={`${baseStyle} bg-green-100 text-green-800`}>
+          <Info className="w-4 h-4" />
+          Tip
+        </span>
+      );
+    default:
+      return (
+        <span className={`${baseStyle} bg-gray-200 text-gray-800`}>
+          <FileText className="w-4 h-4" />
+          Unknown
+        </span>
+      );
+  }
+};
 
 export function meta({}: Route.MetaArgs) {
   return [
@@ -148,7 +198,7 @@ export default function CardPage() {
   const filteredCards = cards.filter((card) =>
     card.title.toLowerCase().includes(query.toLowerCase())
   );
-
+  console.log(cards);
   return (
     <div className="max-w-3xl mx-auto p-4">
       <div className="flex justify-between items-center mb-4">
@@ -204,11 +254,14 @@ export default function CardPage() {
                   opacity: 0.9,
                 }}
               >
-                <Link to={`/card/${card.id}`}>
-                  <h3 className="text-xl font-semibold text-white">
-                    {index + 1}. {card.title}
-                  </h3>
-                </Link>
+                <h3 className="text-xl font-semibold text-white flex justify-between items-center">
+                  <Link to={`/card/${card.id}`}>
+                    <span>
+                      {index + 1}. {card.title}
+                    </span>
+                  </Link>
+                  {getTypeBadge(card.type)}
+                </h3>
                 <p className="text-white mt-2">{card.content}</p>
 
                 <div className="text-xs mt-4 text-white">

@@ -1,10 +1,11 @@
+import { redirect } from "react-router";
 import { removeCard, updateCard } from "~/utils/db";
 import type { Route } from "../+types/about";
 import { saveImage } from "~/utils/card-repo";
-import { redirect } from "react-router";
 
 export async function action({ request, params }: Route.ActionArgs) {
   const id = params.cardId;
+
   if (request.method === "DELETE") {
     try {
       if (id) {
@@ -14,30 +15,31 @@ export async function action({ request, params }: Route.ActionArgs) {
       console.error(err);
     }
     return redirect("/cards");
-  } else if (request.method === "PUT") {
+  }
+
+  if (request.method === "PUT") {
     const formData = await request.formData();
 
-    const title = formData.get("title");
-    const content = formData.get("content");
-    const tier = formData.get("tier");
-    const answer = formData.get("answer");
-    const superCard = formData.get("superCard");
+    const getOptionalNumber = (value: FormDataEntryValue | null) =>
+      value === null || value === "" ? null : Number(value);
+
+    const title = formData.get("title")?.toString() ?? "";
+    const content = formData.get("content")?.toString() ?? "";
+    const answer = formData.get("answer")?.toString() || null;
+    const type = formData.get("type")?.toString() || null;
+    const tier = getOptionalNumber(formData.get("tier"));
+    const superCard = getOptionalNumber(formData.get("superCard"));
+    const reviewCount = getOptionalNumber(formData.get("reviewCount"));
+    const box = formData.get("box")?.toString() || null;
+    const reviewInterval = formData.get("reviewInterval")?.toString() || null;
+    const nextReview = formData.get("nextReview")?.toString() || null;
+    const lastReview = formData.get("lastReview")?.toString() || null;
+
     const file = formData.get("image");
-
-    console.log("superCard: ", superCard);
-
-    const box = formData.get("box");
-    const reviewInterval = formData.get("reviewInterval");
-    const nextReview = formData.get("nextReview");
-    const lastReview = formData.get("lastReview");
-    const reviewCount = formData.get("reviewCount");
-
     let image = null;
 
-    if (file && file instanceof File) {
-      if (file.size !== 0) {
-        image = await saveImage(file);
-      }
+    if (file instanceof File && file.size > 0) {
+      image = await saveImage(file);
     }
 
     const data = {
@@ -52,6 +54,7 @@ export async function action({ request, params }: Route.ActionArgs) {
       lastReview,
       reviewCount,
       image,
+      type,
     };
 
     try {
@@ -59,12 +62,9 @@ export async function action({ request, params }: Route.ActionArgs) {
         await updateCard(Number(id), data);
       }
     } catch (err) {
-      console.error(err);
+      console.error("Error updating card:", err);
     }
+
     return redirect("/cards");
   }
-}
-
-export default function API() {
-  return <div>Card updated...</div>;
 }

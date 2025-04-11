@@ -9,6 +9,7 @@ import {
   BookOpen,
   Clock,
   Layers,
+  Plus,
 } from "lucide-react"; // Lucide Icons 사용
 import clsx from "clsx";
 
@@ -64,13 +65,18 @@ export default function Top(user: any) {
           </Link>
 
           {/* New Card Button */}
-          {/* <Link
-            to="/new"
-            className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-blue-600 transition-all font-extrabold"
-          >
-            <Plus className="w-5 h-5 text-white" />
-            <span className="text-white text-lg">New Card</span>
-          </Link> */}
+          {user.user !== null && (
+            <div>
+              <Link
+                to="/new"
+                className="flex items-center space-x-2 px-4 py-2 rounded-lg hover:bg-blue-600 transition-all font-extrabold"
+              >
+                <Plus className="w-5 h-5 text-white" />
+                <span className="text-white text-lg">New Card</span>
+              </Link>
+            </div>
+          )}
+
           {/* 버튼영역 시작 */}
           {user.user !== null && (
             <div className="relative group">
